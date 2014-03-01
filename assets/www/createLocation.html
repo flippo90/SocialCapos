@@ -2,68 +2,19 @@
 <html>
   <head>
     <title>Place Autocomplete</title>
-		 <style>
-		  html, body, #map-canvas {
-			height: 100%;
-			margin: 0px;
-			padding: 0px
-		  }
-		  .controls {
-			margin-top: 16px;
-			border: 1px solid transparent;
-			border-radius: 2px 0 0 2px;
-			box-sizing: border-box;
-			-moz-box-sizing: border-box;
-			height: 32px;
-			outline: none;
-			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-		  }
-
-		  #pac-input {
-			background-color: #fff;
-			padding: 0 11px 0 13px;
-			width: 400px;
-			font-family: Roboto;
-			font-size: 15px;
-			font-weight: 300;
-			text-overflow: ellipsis;
-		  }
-
-		  #pac-input:focus {
-			border-color: #4d90fe;
-			margin-left: -1px;
-			padding-left: 14px;  /* Regular padding-left + 1. */
-			width: 401px;
-		  }
-
-		  .pac-container {
-			font-family: Roboto;
-		  }
-
-		  #type-selector {
-			color: #fff;
-			background-color: #4d90fe;
-			padding: 5px 11px 0px 11px;
-		  }
-
-		  #type-selector label {
-			font-family: Roboto;
-			font-size: 13px;
-			font-weight: 300;
-		  }
-		}
-
-		</style>	
+		<link rel="stylesheet" type="text/css" href="css/style.css">	
 		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
 
 	</head>
   <body>
+  <a href="index.html"> <img src="img/backarrow.png" width="30" height="30" border="0" alt="zur&uuml;ck"> </a>
+  <hr>
+  <br />
 	<input id="nameInput" class="controls" type="text" placeholder="Name der Location">
 	<input id="pac-input" class="controls" type="text"
         placeholder="Enter a location">
 	
-	<button id="createLocationButton" onClick="onCreateLocation()">Location erstellen</button>
-	<a href="index.html"> zurück </a>
+	<button id="createLocationButton" class="create-button" onClick="onCreateLocation()">Location erstellen</button>
 		
 	<script type="text/javascript" charset="utf-8" src="js/addressAutocomplete.js"></script>
   </body>
