@@ -20,6 +20,12 @@ function createMarker(latLng){
 		position: latLng,
 		map: map,
 	});
+	
+	google.maps.event.addListener(marker, 'click', function() {
+	     console.log("Marker clicked: " + marker.getPosition());
+	     //show event details page
+	     window.open("eventDetails.html","_self")
+	  });
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
