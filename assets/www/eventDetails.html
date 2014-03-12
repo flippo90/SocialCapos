@@ -1,9 +1,31 @@
 <!DOCTYPE html>
 <html>
   <head>
-    
+  	<script type="text/javascript" charset="utf-8" src="js/eventDetails.js"></script>
+  	<link rel="stylesheet" type="text/css" href="css/style.css">
   </head>
-  <body>
-  	<button>bla</button>
+  <body onload="init()">
+  	<label class="controls" type="text">Ausgewaehlte Position</label>	
+  	<label class="controls" id="geoLocationInput" type="text"></label>	
+  	<br>
+  	<label class="controls" type="text">Location: </label>	
+  	<label class="controls" id="locationName" type="text"></label>	
+  	<br>
+  	<label class="controls" type="text">Party: </label>	
+  	<label class="controls" id="partyName" type="text"></label>	
+  	<br>
+  	<label class="controls" type="text">Specials: </label>	
+  	<label class="controls" id="specials" type="text"></label>	
+  	<br>
+  	<label class="controls" type="text">Anzahl Likes</label>	
+  	<label class="controls" id="numberLikes" type="text"></label>	
+  	<br>
+  	<label class="controls" type="text">Oeffnugszeit</label>	
+  	<label class="controls" id="openingTime" type="text"></label>	
+  	<br>
+  	<button class="controls">I Like</button>
+  	<br>
+  	<input id="comment" class="controls" type="text" placeholder="Kommentar Hinterlassen">
+	
   </body>
 </html>
