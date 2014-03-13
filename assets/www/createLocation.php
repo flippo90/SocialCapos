@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -22,6 +23,18 @@
 		}
 	</select>
 	-->
+	<select id="locationTypeSelector">
+		<?php
+			$db = mysqli_connect("localhost", "root", "", "capos");
+						
+			$ergebnis = mysqli_query($db, "SELECT * FROM art");
+			while($row = mysqli_fetch_object($ergebnis))
+			{
+				echo ('<option value="'.$row->id.'">'.$row->Name.'</option>');
+			}
+	  	?>
+	</select>
+	
 	<button id="createLocationButton" class="create-button" onClick="onCreateLocation()">Location erstellen</button>
 	<script type="text/javascript" charset="utf-8" src="js/addressAutocomplete.js"></script>
 	<script language="JavaScript" type="text/javascript" src="js/jquery-2.1.0.js"></script>
