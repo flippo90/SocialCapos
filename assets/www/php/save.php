@@ -1,12 +1,14 @@
 <?php
-	include("include/dbconnect.php");
+	$db = mysqli_connect("localhost", "root", "", "capos");
 
     /* werte übernehmen */
-    $bezeichnung = $_POST["exampleInputBezeichnung"];
-    
+    $name = $_POST["locationName"];
+    $geoLocation = $_POST["geoLocation"];
+    $type = $_POST["type"];
+    $openingHours = $_POST["openingHours"];
     
     /* weiterverarbeitung der variablen/daten */
-	$eintrag = "INSERT INTO eintraege (bezeichnung) VALUES ('$bezeichnung')";
+	$stmt = "INSERT INTO locations (Name, GeoLocation, Oeffnungszeiten, Art, Likes) VALUES ('$name', '$geoLocation', '$openingHours', '$type', 0)";
 
-	$eintragen = mysqli_query($db, $eintrag);
+	$eintragen = mysqli_query($db, $stmt);
 ?>

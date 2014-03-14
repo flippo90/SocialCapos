@@ -1,5 +1,6 @@
 var map;
 var myGeoLoaction;
+var searchedType
 function initialize() {
 
 	// init google maps
@@ -13,10 +14,39 @@ function initialize() {
 	
 	//find my location and set marker to it
 	markCurrentLocation();
-	
 	//foreach location in database
-	var lgn = new google.maps.LatLng(48.400884, 9.991201000000046);
-	createMarker(lgn);
+	setAllLocationEntriesToMap();
+}
+
+function setAllLocationEntriesToMap(){
+	$.ajax({
+        type: "GET",
+        url: "php/getAllLocations.php",
+        dataType: "json",
+
+        success: function(result){
+        	for (var loc in result.geoLocations){
+        		createMarkerIfFitsInFilter(result.types[loc], result.geoLocations[loc].slice(1));
+            }
+        }
+    })
+}
+
+function createMarkerIfFitsInFilter(type, geoLocation){
+	searchedType = window.location.hash.slice(1);
+	console.log("compare: " + type + " == " + searchedType);
+	console.log(type == searchedType);
+	if(type == searchedType){
+		console.log("after string compare");
+		var latLgn = getPointFromString(geoLocation);
+		createMarker(latLgn);
+	}
+}
+
+function getPointFromString(str){
+	var bits = str.split(/,\s*/);
+	point = new google.maps.LatLng(parseFloat(bits[0]),parseFloat(bits[1]));
+	return point;
 }
 
 function markCurrentLocation()
@@ -50,8 +80,6 @@ function createMarker(latLng){
 }
 
 function createCurrentPosMarker(latLng){
-	var image = 'homer_simpson_on_a_chair.jpg';
-	
 	var marker = new google.maps.Marker({
 		position: latLng,
 		map: map,

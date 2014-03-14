@@ -12,17 +12,11 @@
   <hr>
   <br />
 	<input id="nameInput" class="controls" type="text" placeholder="Name der Location">
+	<br />
 	<input id="adresse" class="controls" type="text" placeholder="Adresse eingeben">
+	<br />
 	<input id="oeffnungszeit" class="controls" type="text" placeholder="Öffnungszeit">
-	<!-- need to fill the options with the entries vom 'art' table
-	<select id="locationTypeSelector">
-		$ergebnis = mysqli_query($db, "SELECT * FROM eintraege");
-		while($row = mysqli_fetch_object($ergebnis))
-		{
-			<option value=.$row->id>.$row->Name</option>
-		}
-	</select>
-	-->
+	<br />
 	<select id="locationTypeSelector">
 		<?php
 			$db = mysqli_connect("localhost", "root", "", "capos");
@@ -34,9 +28,9 @@
 			}
 	  	?>
 	</select>
-	
-	<button id="createLocationButton" class="create-button" onClick="onCreateLocation()">Location erstellen</button>
-	<script type="text/javascript" charset="utf-8" src="js/addressAutocomplete.js"></script>
+	<br />
+	<button id="createLocationButton" onClick="onCreateLocation()">Location erstellen</button>
+	<script type="text/javascript" charset="utf-8" src="js/createLocation.js"></script>
 	<script language="JavaScript" type="text/javascript" src="js/jquery-2.1.0.js"></script>
 	
 </body>

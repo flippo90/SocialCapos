@@ -4,17 +4,22 @@
 		<link rel="stylesheet" type="text/css" href="css/style.css">
 		<title>PhoneGap</title>
 		<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/mainPage.js"></script>
+		
 	</head>
 	<body>
-		<script type="text/javascript" charset="utf-8" src="js/mainPage.js"></script>
 		<h2>Wähle eine Location aus</h2>
 		
-		<a href="#"> <img src="img/beer-icon.png" width="100" height="100" border="0" alt="Kneipe"> </a>
-		<a href="#"> <img src="img/ic_launcher-web.png" width="100" height="100" border="0" alt="Bar"> </a>
-		<a href="#"> <img src="img/restaurant.gif" width="100" height="100" border="0" alt="Essen"> </a>
+		<button id="createLocationButton" onClick="onShowBars()">Bar</button>
+		<button id="createLocationButton" onClick="onShowRestaurants()">Restaurant</button>
+		<button id="createLocationButton" onClick="onShowClubs()">Club</button>
+		<button id="createLocationButton" onClick="onShowOther()">Sonstiges</button>
+		<hr>
 		<br />
 		<a href="createLocation.php"> create Location </a>
-		<hr>
-		<a href="locationOverview.html"> view Location </a>
+		<br />
+		<a href="createEvent.html"> create Location </a>
+		<br />
+		<a href="googleMapsOverview.html"> view Location </a>
 	</body>
 </html>
