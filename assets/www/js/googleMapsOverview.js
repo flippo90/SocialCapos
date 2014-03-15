@@ -1,6 +1,10 @@
 var map;
 var myGeoLoaction;
 var searchedType
+//TODO: Marker zu Events setzen
+//TODO: Locations die zur aktuellen Zeit kein Event haben sollen nur als kleine rote Punkte dargestellt werden
+//TODO: entscheiden wie die darstellung von events ist -> nur events zur aktuellen zeit darstellen? Events vom ganzen tag darstellen?
+//		wenn ja wie unterscheidet man events die aktuell sind von den die zwar am selben tag aber in der vergangenheit oder in der zukunft liegen?
 function initialize() {
 
 	// init google maps

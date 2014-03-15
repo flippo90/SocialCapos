@@ -1,4 +1,4 @@
-
+//TODO: Eventdetails zum aktuell laufenden event aus db holen (mit hilfe von location koordinaten)
 function init(){
 	
 	// here we have to get the information for the specific event that is at the location with the koordinated given
