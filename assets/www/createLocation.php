@@ -5,7 +5,8 @@
     <title>Place Autocomplete</title>
 		<link rel="stylesheet" type="text/css" href="css/style.css">	
 		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
-		
+		<script type="text/javascript" charset="utf-8" src="js/createLocation.js"></script>
+		<script language="JavaScript" type="text/javascript" src="js/jquery-2.1.0.js"></script>
 	</head>
   <body>
   <a href="index.html"> <img src="img/backarrow.png" width="30" height="30" border="0" alt="zur&uuml;ck"> </a>
@@ -28,10 +29,9 @@
 			}
 	  	?>
 	</select>
-	<br />
+	<br />	
 	<button id="createLocationButton" onClick="onCreateLocation()">Location erstellen</button>
-	<script type="text/javascript" charset="utf-8" src="js/createLocation.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/jquery-2.1.0.js"></script>
-	
+	<br/>
+	<label id="successLabel" visible="false">Location erfolgreich in DB gespeichert</label>
 </body>
 </html>

@@ -4,10 +4,11 @@ function initialize() {
 	var input = (document.getElementById('adresse'));
 	autocomplete = new google.maps.places.Autocomplete(input);
 
-	var infowindow = new google.maps.InfoWindow();
-}
+	document.getElementById("successLabel").style.display = "none";
+	}
 
 function onCreateLocation(){
+	document.getElementById("successLabel").style.display = "none";
 	// mit diesen werten soll ein Eintrag in die tabelle locations eingefÃ¼gt werden
 	var locationName = document.getElementById("nameInput").value;
 	var location = autocomplete.getPlace().geometry.location;
@@ -23,7 +24,7 @@ function onCreateLocation(){
          {
              /* form-div verstecken, seite nachladen & wieder einblenden (2000 ms) */
              //$("#myFormDiv").hide().load("message.html").fadeIn(2000);
-             console.log('erfolgreich hinzugefügt');
+             document.getElementById("successLabel").style.display = "inline";
          }
      });
 }
