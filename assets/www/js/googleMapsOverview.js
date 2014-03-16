@@ -46,6 +46,7 @@ function setAllLocationEntriesToMap(){
 function createMarker(latLng, type){
 	var marker = new google.maps.Marker({
 		position: latLng,
+		animation: google.maps.Animation.DROP,
 	});
 	
 	google.maps.event.addListener(marker, 'click', function() {
@@ -58,12 +59,16 @@ function createMarker(latLng, type){
 
 function addMarkerToList(type, marker){
 	if (type == 1){
+		marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
 		restaurantMarker.push(marker);
 	} else if (type == 2){
+		marker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
 		barMarker.push(marker);
 	} else if (type == 3){
+		marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png')
 		clubMarker.push(marker);
 	} else if (type == 4){
+		marker.setIcon('http://maps.google.com/mapfiles/ms/icons/yellow-dot.png')
 		otherMarker.push(marker);
 	} else{
 		// should be the self pos marker
