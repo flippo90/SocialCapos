@@ -13,3 +13,7 @@ function onShowClubs(){
 function onShowOther(){
 	window.open("googleMapsOverview.html?#" + 4 ,"_self");
 }
+
+function onShowAll(){
+	window.open("googleMapsOverview.html?#" + 5 ,"_self");	
+}

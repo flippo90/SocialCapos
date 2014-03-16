@@ -13,7 +13,12 @@
 	
   </head>
   <body>
-  	<a href="index.html"> <img src="img/backarrow.png" width="30" height="30" border="0" alt="zur&uuml;ck"> </a>
+  	<a href="index.html"> <img src="img/backarrow.png" width="30" height="30" border="0" alt="zur&uuml;ck"></a> 
+  	<input type="checkbox" name="checkBar" onclick="onCheckBarChanged(this)">Bar</input>
+  	<input type="checkbox" name="checkClub" onclick="onCheckClubChanged(this)">Club</input>
+  	<input type="checkbox" name="checkRestaurant" onclick="onCheckRestaurantChanged(this)">Restraurant</input>  	
+  	<input type="checkbox" name="checkOther" onclick="onCheckOtherChanged(this)">Sonstiges</input>
+
     <div id="map-canvas"></div>
   </body>
 </html>
