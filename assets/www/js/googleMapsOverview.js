@@ -23,11 +23,11 @@ function initialize() {
 	
 	//find my location and set marker to it
 	markCurrentLocation();
-	//foreach location in database
 	setAllLocationEntriesToMap();
 }
 
 function setAllLocationEntriesToMap(){
+	
 	$.ajax({
         type: "GET",
         url: "php/getAllLocations.php",
@@ -59,26 +59,20 @@ function createMarker(latLng, type, locationId){
 
 function addMarkerToList(type, marker, locationId){
 	if (type == 1){
-		restaurantMarker.push(setMarkerIcon(marker, "green", locationId));
+		locationHasEventAtThisDay(marker, "green", locationId);
+		restaurantMarker.push(marker);
 	} else if (type == 2){
-		barMarker.push(setMarkerIcon(marker, "red", locationId));
+		locationHasEventAtThisDay(marker, "red", locationId);
+		barMarker.push(marker);
 	} else if (type == 3){
-		clubMarker.push(setMarkerIcon(marker, "blue", locationId));
+		locationHasEventAtThisDay(marker, "blue", locationId);
+		clubMarker.push(marker);
 	} else if (type == 4){
-		otherMarker.push(setMarkerIcon(marker, "yellow", locationId));
+		locationHasEventAtThisDay(marker, "yellow", locationId)
+		otherMarker.push(marker);
 	} else{
 		// should be the self pos marker
 	}
-}
-
-function setMarkerIcon(marker, color, locationId){
-	
-	if (locationHasEventAtThisDay(locationId)){
-		marker.setIcon('http://maps.google.com/mapfiles/ms/icons/'+color+'-dot.png');
-	} else{
-		marker.setIcon(createCircle(color));
-	}
-	return marker;
 }
 
 function createCircle(color){
@@ -93,24 +87,31 @@ function createCircle(color){
 	return redStar;
 }
 
-function locationHasEventAtThisDay(locationId){
-	console.log("start of method");
+function locationHasEventAtThisDay(marker, color, locationId){
 	$.ajax({
         type: "GET",
         url: "php/getEventsForLocation.php",
         dataType: "json",
         
         success: function(result){
-        	for (var loc in result.dateArray){
-        		if (result.locationIdArray[loc] == locationId){
-        			if (eventIsToday(result.dateArray[loc])){
-        				// should return true from the whole method but does not work 
-        			}            			
-        		}        		
-            }
+        	var iconString = createCircle(color);
+        	var eventDate = locationHasEvent(result, locationId);
+        	if (eventDate != null){
+        		if (eventIsToday(eventDate)){
+        			iconString = 'http://maps.google.com/mapfiles/ms/icons/'+color+'-dot.png';
+        		}
+        	}
+        	marker.setIcon(iconString);
         }
     })
-    console.log("end of method");
+}
+
+function locationHasEvent(dbResult, locationId){
+	for (var i in dbResult.dateArray){
+		if (dbResult.locationIdArray[i] == locationId){
+			return dbResult.dateArray[i];
+		}        		
+    }
 }
 
 function eventIsToday(eventDate){
@@ -128,7 +129,6 @@ function eventIsToday(eventDate){
 		dd = "0" + dd;
 	
 	if (eventDate == yyyy + "-" + mms + "-" + dd){
-		console.log("lauft");
 		return true;
 	}
 	else{
@@ -194,7 +194,6 @@ function markCurrentLocation()
 
 function showPosition(position)
 {
-	console.log("show position: " + position.coords.latitude + "," + position.coords.longitude);
 	var myPos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 	map.setCenter(myPos);
 	createCurrentPosMarker(myPos);
