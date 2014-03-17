@@ -104,7 +104,7 @@ function locationHasEventAtThisDay(locationId){
         	for (var loc in result.dateArray){
         		if (result.locationIdArray[loc] == locationId){
         			if (eventIsToday(result.dateArray[loc])){
-        				// should return true from the whole method but does not work
+        				// should return true from the whole method but does not work 
         			}            			
         		}        		
             }
