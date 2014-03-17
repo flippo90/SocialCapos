@@ -36,14 +36,14 @@ function setAllLocationEntriesToMap(){
         success: function(result){
         	for (var loc in result.geoLocations){
         		var geoLocString = getPointFromString(result.geoLocations[loc].slice(1));
-        		createMarker(geoLocString, result.types[loc]);
+        		createMarker(geoLocString, result.types[loc], result.id[loc]);
             }
         	showInitialMarkers(window.location.hash.slice(1).split(''));
         }
     })
 }
 
-function createMarker(latLng, type){
+function createMarker(latLng, type, locationId){
 	var marker = new google.maps.Marker({
 		position: latLng,
 		animation: google.maps.Animation.DROP,
@@ -54,24 +54,85 @@ function createMarker(latLng, type){
 	     window.open("eventDetails.html?#" + marker.getPosition() ,"_self");
 	  });
 	
-	addMarkerToList(type, marker);
+	addMarkerToList(type, marker, locationId);
 }
 
-function addMarkerToList(type, marker){
+function addMarkerToList(type, marker, locationId){
 	if (type == 1){
-		marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
-		restaurantMarker.push(marker);
+		restaurantMarker.push(setMarkerIcon(marker, "green", locationId));
 	} else if (type == 2){
-		marker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
-		barMarker.push(marker);
+		barMarker.push(setMarkerIcon(marker, "red", locationId));
 	} else if (type == 3){
-		marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png')
-		clubMarker.push(marker);
+		clubMarker.push(setMarkerIcon(marker, "blue", locationId));
 	} else if (type == 4){
-		marker.setIcon('http://maps.google.com/mapfiles/ms/icons/yellow-dot.png')
-		otherMarker.push(marker);
+		otherMarker.push(setMarkerIcon(marker, "yellow", locationId));
 	} else{
 		// should be the self pos marker
+	}
+}
+
+function setMarkerIcon(marker, color, locationId){
+	
+	if (locationHasEventAtThisDay(locationId)){
+		marker.setIcon('http://maps.google.com/mapfiles/ms/icons/'+color+'-dot.png');
+	} else{
+		marker.setIcon(createCircle(color));
+	}
+	return marker;
+}
+
+function createCircle(color){
+	var redStar = {
+			  path: google.maps.SymbolPath.CIRCLE,
+			  fillColor: color,
+			  fillOpacity: 1,
+			  scale: 3,
+			  strokeColor: color,
+			  strokeWeight: 10
+			};
+	return redStar;
+}
+
+function locationHasEventAtThisDay(locationId){
+	console.log("start of method");
+	$.ajax({
+        type: "GET",
+        url: "php/getEventsForLocation.php",
+        dataType: "json",
+        
+        success: function(result){
+        	for (var loc in result.dateArray){
+        		if (result.locationIdArray[loc] == locationId){
+        			if (eventIsToday(result.dateArray[loc])){
+        				// should return true from the whole method but does not work
+        			}            			
+        		}        		
+            }
+        }
+    })
+    console.log("end of method");
+}
+
+function eventIsToday(eventDate){
+	var today = new Date();
+	var dd = today.getDate().toString();
+	var mm = today.getMonth()+1; //January is 0!
+	var mms = mm.toString();
+	var yyyy = today.getFullYear();
+	
+	if (mms.length == 1){
+		mms = "0" + mms;
+	}
+	
+	if (dd.length == 1)
+		dd = "0" + dd;
+	
+	if (eventDate == yyyy + "-" + mms + "-" + dd){
+		console.log("lauft");
+		return true;
+	}
+	else{
+		return false;
 	}
 }
 
@@ -79,17 +140,25 @@ function addMarkerToList(type, marker){
 function showInitialMarkers(type){
 	if (type == 1){
 		showMarkers(restaurantMarker);
+		document.getElementById("checkRestaurant").checked = true;
 	} else if (type == 2){
 		showMarkers(barMarker);
+		document.getElementById("checkBar").checked = true;
 	} else if (type == 3){
 		showMarkers(clubMarker);
+		document.getElementById("checkClub").checked = true;
 	} else if (type == 4){
 		showMarkers(otherMarker);
+		document.getElementById("checkOther").checked = true;
 	} else if (type == 5){
 		showMarkers(restaurantMarker);
 		showMarkers(barMarker);
 		showMarkers(clubMarker);
 		showMarkers(otherMarker);
+		document.getElementById("checkOther").checked = true;
+		document.getElementById("checkClub").checked = true;
+		document.getElementById("checkRestaurant").checked = true;
+		document.getElementById("checkBar").checked = true;
 	}
 }
 

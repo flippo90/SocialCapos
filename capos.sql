@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 15. Mrz 2014 um 11:37
+-- Erstellungszeit: 17. Mrz 2014 um 18:40
 -- Server Version: 5.6.16
 -- PHP-Version: 5.5.9
 
@@ -78,14 +78,16 @@ CREATE TABLE IF NOT EXISTS `events` (
   `Turnus` int(1) NOT NULL,
   `Location` int(5) NOT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
 --
 -- Daten für Tabelle `events`
 --
 
 INSERT INTO `events` (`Id`, `Name`, `Description`, `Specials`, `Date`, `Uhrzeit`, `Turnus`, `Location`) VALUES
-(3, 'Tortuga Happy Hour', 'Happy Hour', '2 Coktails zum Pries von einem', '2014-03-14', '20-22', 1, 7);
+(3, 'Tortuga Happy Hour', 'Happy Hour', '2 Coktails zum Pries von einem', '2014-03-14', '20-22', 1, 7),
+(4, 'happy hout', 'bla', 'jumbo 5 euro', '2014-03-21', '20-22', 1, 10),
+(5, 'mein event', 'happy hour', 'coole party', '2014-03-16', '8-12', 1, 5);
 
 -- --------------------------------------------------------
 
@@ -101,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `locations` (
   `Art` int(20) NOT NULL,
   `Likes` int(5) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 --
 -- Daten für Tabelle `locations`
@@ -117,7 +119,8 @@ INSERT INTO `locations` (`id`, `Name`, `GeoLocation`, `Oeffnungszeiten`, `Art`, 
 (8, 'Theater', '(48.401057, 9.986697', '12-14', 4, 0),
 (9, 'mÃ¼nster', '(48.398523, 9.992555', '8', 4, 0),
 (10, 'choclet', '(48.396278, 9.994727', '8-12', 2, 0),
-(11, 'citrus', '(48.399877, 9.996631', '1-3', 3, 0);
+(11, 'citrus', '(48.399877, 9.996631', '1-3', 3, 0),
+(12, 'roxy', '(48.391555, 9.985777', '12-24', 4, 0);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
