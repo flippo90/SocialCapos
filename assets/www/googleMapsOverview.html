@@ -12,26 +12,34 @@
 
   <script type="text/javascript" charset="utf-8" src="js/googleMapsOverview.js"></script>
   <script language="JavaScript" type="text/javascript" src="js/jquery-2.1.0.js"></script>
+  <script type="text/javascript" charset="utf-8" src="js/mainPage.js"></script>
   
   </head>
   <body>
+  <!--
     <a href="index.html"> <img src="img/backarrow.png" width="30" height="30" border="0" alt="zur&uuml;ck"></a> 
     <input type="checkbox" id="checkBar" name="checkBar" onclick="onCheckBarChanged(this)">Bar</input>
     <input type="checkbox" id="checkClub" name="checkClub" onclick="onCheckClubChanged(this)">Club</input>
     <input type="checkbox" id="checkRestaurant" name="checkRestaurant" onclick="onCheckRestaurantChanged(this)">Restraurant</input>   
-    <input type="checkbox" id="checkOther" name="checkOther" onclick="onCheckOtherChanged(this)">Sonstiges</input>
+    <input type="checkbox" id="checkOther" name="checkOther" onclick="onCheckOtherChanged(this)">Sonstiges</input>-->
 
-    <header>
-    <button class="btn btn-success"><i class=""></i> Suche</button>
-    <button class="btn btn-success"><i class=""></i> Einstellungen</button>
-    </header>
-
-    <div id="suche-container"></div>
-    <div id="einstellungen-container"></div>
-
+<header id="section-header" class="section-header">
+    <a href="#" id="btnSuche" class="btn btn-default" data-href="suche">Suche</a>
+    <a href="#" id="btnEinstellungen" class="btn btn-default right" data-href="einstellungen">Einstellungen</a>
+</header>
+<main id="section-main" class="section-main">
     <div id="map-canvas"></div>
+</main>
+<section id="section-suche" class="section-suche">
+  <h2>Suche</h2>
+    <input type="checkbox" id="checkBar" name="checkBar" onclick="onCheckBarChanged(this)">Bar</input>
+    <input type="checkbox" id="checkClub" name="checkClub" onclick="onCheckClubChanged(this)">Club</input>
+    <input type="checkbox" id="checkRestaurant" name="checkRestaurant" onclick="onCheckRestaurantChanged(this)">Restraurant</input>   
+    <input type="checkbox" id="checkOther" name="checkOther" onclick="onCheckOtherChanged(this)">Sonstiges</input>
+</section>
+<section id="section-einstellungen" class="section-einstellungen">
+  <h2>Einstellungen</h2>
+</section>
 
-    <footer>
-    </footer>
   </body>
 </html>

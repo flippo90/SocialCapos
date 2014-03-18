@@ -17,3 +17,17 @@ function onShowOther(){
 function onShowAll(){
 	window.open("googleMapsOverview.html?#" + 5 ,"_self");	
 }
+
+$(document).ready(function() {
+	$('#btnSuche').on('click', function() {
+    	$('#section-suche').toggleClass('active');
+	});
+
+	$('#btnEinstellungen').on('click', function() {
+	    $('#section-einstellungen').toggleClass('active');
+	});
+
+	$('#section-main').on('click', function() {
+	    $('#section-suche, #section-einstellungen').removeClass('active');
+	});
+});
