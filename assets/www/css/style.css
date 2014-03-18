@@ -121,12 +121,13 @@ body {
     left: 0;
     overflow: hidden;
 }
-
+/*
 .section-header .btn {
     padding: 5px;
     display: inline-block;
     border-radius: 5px;
 }
+*/
 
 .section-main {
     width: 100%;

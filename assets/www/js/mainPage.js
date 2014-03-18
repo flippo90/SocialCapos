@@ -21,10 +21,12 @@ function onShowAll(){
 $(document).ready(function() {
 	$('#btnSuche').on('click', function() {
     	$('#section-suche').toggleClass('active');
+    	$('#section-einstellungen').removeClass('active');
 	});
 
 	$('#btnEinstellungen').on('click', function() {
 	    $('#section-einstellungen').toggleClass('active');
+	    $('#section-suche').removeClass('active');
 	});
 
 	$('#section-main').on('click', function() {
