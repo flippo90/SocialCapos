@@ -23,6 +23,7 @@ function initialize() {
 	
 	//find my location and set marker to it
 	markCurrentLocation();
+	//set markers from locations to map
 	setAllLocationEntriesToMap();
 }
 
