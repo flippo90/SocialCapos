@@ -25,11 +25,11 @@
 </main>
 <section id="section-suche" class="section-suche">
   <h2>Filter</h2>
-  <p>Filtereinstellungen für die angezeigten Locations und Events</p>
+  <p>Filtereinstellungen f&uuml;r die angezeigten Locations und Events</p>
   <form role="form">
 	<div class="form-group">
-    	<label for="exampleInputEmail1">Locationtyp</label>
-      	<labal> Bar </label>
+    	<!--<label for="exampleInputEmail1">Locationtyp</label>-->
+      	
       	<div class="onoffswitch">
 	    	<input type="checkbox" name="checkBar" class="onoffswitch-checkbox" id="checkBar" onclick="onCheckBarChanged(this)">
 	    	<label class="onoffswitch-label" for="checkBar">
@@ -37,15 +37,15 @@
         		<div class="onoffswitch-switch"></div>
     		</label>
     	</div>  
-    	<labal> Club </label>  	
+    		<label class="lbl"> Bar </label>
 		<div class="onoffswitch">
 	    	<input type="checkbox" name="checkClub" class="onoffswitch-checkbox" id="checkClub" onclick="onCheckClubChanged(this)">
 	    	<label class="onoffswitch-label" for="checkClub">
         		<div class="onoffswitch-inner"></div>
         		<div class="onoffswitch-switch"></div>
     		</label>
-    	</div>
-    	<labal> Restaurant </label>
+    	</div>	
+    	<label class="lbl"> Restaurant </label>
     	<div class="onoffswitch">
 	    	<input type="checkbox" name="checkRestaurant" class="onoffswitch-checkbox" id="checkRestaurant" onclick="onCheckRestaurantChanged(this)">
 	    	<label class="onoffswitch-label" for="checkRestaurant">
@@ -53,7 +53,7 @@
         		<div class="onoffswitch-switch"></div>
     		</label>
     	</div>
-    	<labal> Sonstiges </label>
+		<label class="lbl"> Club </label>  
     	<div class="onoffswitch">
 	    	<input type="checkbox" name="checkOther" class="onoffswitch-checkbox" id="checkOther" onclick="onCheckOtherChanged(this)">
 	    	<label class="onoffswitch-label" for="checkOther">
@@ -61,8 +61,9 @@
         		<div class="onoffswitch-switch"></div>
     		</label>
     	</div>
+		<label class="lbl"> Sonstiges </label>
     </div>
-    <label> Veranstaltungen an einem bestimmen Datum
+    <label class="lbl2"> Veranstaltungen an einem bestimmen Datum
     <input type="checkbox" id="selectDayCheckbox"></input> 
     <br>
     <input id="dateInput" class="controls" type="date" placeholder="Datum"> 

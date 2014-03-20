@@ -188,6 +188,8 @@ body {
 .onoffswitch {
     position: relative; width: 90px;
     -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+	display:block;
+	float:left;
 }
 .onoffswitch-checkbox {
     display: none;
@@ -230,4 +232,19 @@ body {
 }
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
     right: 0px; 
+}
+
+.lbl{
+	float:left;
+}
+
+.lbl2{
+	width:100%;
+	float:left;
+}
+
+.form-group{
+	width:14%;
+	float:left;
+	margin-bottom:15px;
 }
