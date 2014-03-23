@@ -63,10 +63,17 @@
     	</div>
 		<label class="lbl"> Sonstiges </label>
     </div>
-    <label class="lbl2"> Veranstaltungen an einem bestimmen Datum
-    <input type="checkbox" id="selectDayCheckbox"></input> 
+    <label class="lbl2"> Jetzt (+-2 Stunden)
+    <input type="checkbox" id="filterByCurrentTimeCheckbox"></input>
     <br>
-    <input id="dateInput" class="controls" type="date" placeholder="Datum"> 
+    <label class="lbl2"> Nach Zeit
+    <input type="checkbox" id="filterByTimeCheckbox"></input>
+    <input id="timeInput" class="controls" type="time" placeholder="Zeit">
+    <br>
+    <label class="lbl2"> Nach Datum
+    <input type="checkbox" id="filterByDateCheckbox"></input>
+    <input id="dateInput" class="controls" type="date" placeholder="Datum">
+    <br>
   </form>
 </section>
 
@@ -74,17 +81,32 @@
   <h2>Einstellungen</h2>
   <form class="form-horizontal" role="form">
   <div class="form-group">
-    <label for="inputRadius" class="col-sm-2 control-label">Radius (KM)</label>
     <div class="col-sm-10">
-      <input type="email" class="form-control" id="inputRadius" placeholder="Radius (KM)">
+		<input type = "radio"
+                 name = "resultDisplay"
+                 id = "displayMap"
+                 value = "map"
+                 checked = "checked" />
+          <label for = "sizeSmall">Karte</label>
+          
+          <input type = "radio"
+                 name = "resultDisplay"
+                 id = "displayList"
+                 value = "list" />
+    	<label for = "sizeMed">Liste</label>
+	</div>
+    <div class="col-sm-10">
+		<label for="inputRadius" class="col-sm-2 control-label">Radius (KM)</label>
+		<input type="range" min="0" max="50" value="0" step="1" onchange="showValue(this.value)" />
+		<span id="range">0</span>
     </div>
   </div>
-  <div class="radio">
-  <label>
-    <input type="radio" name="optionsRadios" id="optionsRadios1" value="aktuellerStandort" >
-    aktuellen Standort verwenden
-  </label>
-</div>
+	<div class="radio">
+		<label>
+			<input type="radio" name="optionsRadios" id="optionsRadios1" value="aktuellerStandort" >
+				aktuellen Standort verwenden
+		</label>
+	</div>
   <div class="form-group">
     <label for="inputOrt" class="col-sm-2 control-label">Ort</label>
     <div class="col-sm-10">
@@ -100,13 +122,7 @@
       </div>
     </div>
   </div>
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success">speichern</button>
-    </div>
-  </div>
 </form>
 </section>
-
-  </body>
+</body>
 </html>

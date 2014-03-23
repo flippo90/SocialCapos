@@ -239,6 +239,11 @@ function onCheckOtherChanged(checkbox){
     }
 }
 
+function showValue(newValue)
+{
+	document.getElementById("range").innerHTML=newValue;
+}
+
 google.maps.event.addDomListener(window, 'load', initialize);
 
     
