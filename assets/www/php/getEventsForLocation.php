@@ -4,7 +4,7 @@
     /* werte übernehmen */
     
     /* weiterverarbeitung der variablen/daten*/ 
-	$stmt = "SELECT `Id`, `Date`, `Uhrzeit`, `Location` FROM `events` ";
+	$stmt = "SELECT * FROM `events` ";
 	
 	$ergebnis = mysqli_query($db, $stmt);
 	
@@ -12,19 +12,31 @@
 	$dateArray = array();
 	$timeArray = array();
 	$locationIdArray = array();
+	$nameArray = array(); 		
+	$descriptionArray = array();
+	$turnusArray = array();
+	$specialsArray = array();
 	
 	while($row = mysqli_fetch_array($ergebnis)){
 	     $idArray[] = $row['Id'];
 	     $dateArray[] = $row['Date']; 
 	     $timeArray[] = $row['Uhrzeit'];
 		$locationIdArray[] = $row['Location'];
+		$nameArray[] = $row['Name'];
+	     $descriptionArray[] = $row['Description']; 
+	     $turnusArray[] = $row['Turnus'];
+		$specialsArray[] = $row['Specials'];
 	}
 
 	echo json_encode( array( 
 	    "idArray" =>  $idArray,
 	    "dateArray" => $dateArray,
 	    "timeArray" => $timeArray,
-	    "locationIdArray" => $locationIdArray
+	    "locationIdArray" => $locationIdArray,
+	    "nameArray" => $nameArray,
+	     "descriptionArray" => $descriptionArray,
+	    "turnusArray" => $turnusArray,
+		"specialsArray" => $specialsArray
 	    ) 
 	);
 ?>

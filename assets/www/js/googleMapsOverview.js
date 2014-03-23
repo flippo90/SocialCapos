@@ -1,7 +1,10 @@
 var map;
 var myGeoLoaction;
 var searchedType
-var allLocations;
+
+var allLocations = new Array();
+var allEvents = new Array();
+
 var barMarker = new Array();
 var clubMarker = new Array();
 var restaurantMarker = new Array();
@@ -37,39 +40,91 @@ function setAllLocationEntriesToMap(){
         success: function(result){
         	for (var loc in result.geoLocations){
         		var geoLocString = getPointFromString(result.geoLocations[loc].slice(1));
-        		createMarker(geoLocString, result.types[loc], result.id[loc]);
+        		var location = new locationConstructor(result.id[loc], result.names[loc], 
+        				geoLocString, result.openingHours[loc], result.types[loc], result.likes[loc])
+        		allLocations.push(location)
             }
-        	showInitialMarkers(window.location.hash.slice(1).split(''));
+        	getAllEvents();
         }
     })
 }
 
-function createMarker(latLng, type, locationId){
-	var marker = new google.maps.Marker({
-		position: latLng,
-		animation: google.maps.Animation.DROP,
-	});
-	
-	google.maps.event.addListener(marker, 'click', function() {
-	     //show event details page
-	     window.open("eventDetails.html?#" + marker.getPosition() ,"_self");
-	  });
-	
-	addMarkerToList(type, marker, locationId);
+
+function getAllEvents(){
+	$.ajax({
+        type: "GET",
+        url: "php/getEventsForLocation.php",
+        dataType: "json",
+        
+        success: function(result){
+        	for (var i in result.idArray){
+        		var event = new eventConstructor(result.idArray[i], result.dateArray[i], 
+        				result.timeArray[i], result.locationIdArray[i], result.nameArray[i], 
+        				result.descriptionArray[i], result.turnusArray[i], result.specialsArray[i]);
+        		allEvents.push(event);
+        	}
+        	createAllMarkers();
+        }
+    })
 }
 
-function addMarkerToList(type, marker, locationId){
+function createAllMarkers(){
+	var filteredLocationList = getAllLocationsWithEventToday(allLocations, allEvents);
+	createMarkers(filteredLocationList, true);
+	var others = getAllLocationsThatDontMatchFilter(allLocations, filteredLocationList);
+	createMarkers(others, false);
+}
+
+function createMarkers(locationList, hasEvent){
+
+	for (var i in locationList){
+		var color = getColorForMarker(locationList[i].type);
+		var iconString;
+		
+		if (hasEvent){
+			iconString = 'http://maps.google.com/mapfiles/ms/icons/'+color+'-dot.png';
+		} else{
+			iconString = createCircle(color);
+		}
+		
+		var marker = new google.maps.Marker({
+			position: locationList[i].geoLocation,
+			animation: google.maps.Animation.DROP,
+		});
+		
+		google.maps.event.addListener(marker, 'click', function() {
+		     //show event details page
+		     window.open("eventDetails.html?#" + marker.getPosition() ,"_self");
+		  });
+		
+		marker.setIcon(iconString);		
+		
+		addMarkerToList(locationList[i].type, marker);
+	}
+}
+
+function getColorForMarker(type){
+	var color;
+	if (type == 1)
+		color = 'yellow'
+	else if (type == 2)
+		color = 'green';
+	else if (type == 3)
+		color = 'red';
+	else 
+		color = 'blue';
+	
+	return color;
+}
+
+function addMarkerToList(type, marker){
 	if (type == 1){
-		locationHasEventAtThisDay(marker, "green", locationId);
 		restaurantMarker.push(marker);
 	} else if (type == 2){
-		locationHasEventAtThisDay(marker, "red", locationId);
 		barMarker.push(marker);
 	} else if (type == 3){
-		locationHasEventAtThisDay(marker, "blue", locationId);
 		clubMarker.push(marker);
 	} else if (type == 4){
-		locationHasEventAtThisDay(marker, "yellow", locationId)
 		otherMarker.push(marker);
 	} else{
 		// should be the self pos marker
@@ -77,7 +132,7 @@ function addMarkerToList(type, marker, locationId){
 }
 
 function createCircle(color){
-	var redStar = {
+	var circle = {
 			  path: google.maps.SymbolPath.CIRCLE,
 			  fillColor: color,
 			  fillOpacity: 1,
@@ -85,57 +140,9 @@ function createCircle(color){
 			  strokeColor: color,
 			  strokeWeight: 10
 			};
-	return redStar;
+	return circle;
 }
 
-function locationHasEventAtThisDay(marker, color, locationId){
-	$.ajax({
-        type: "GET",
-        url: "php/getEventsForLocation.php",
-        dataType: "json",
-        
-        success: function(result){
-        	var iconString = createCircle(color);
-        	var eventDate = locationHasEvent(result, locationId);
-        	if (eventDate != null){
-        		if (eventIsToday(eventDate)){
-        			iconString = 'http://maps.google.com/mapfiles/ms/icons/'+color+'-dot.png';
-        		}
-        	}
-        	marker.setIcon(iconString);
-        }
-    })
-}
-
-function locationHasEvent(dbResult, locationId){
-	for (var i in dbResult.dateArray){
-		if (dbResult.locationIdArray[i] == locationId){
-			return dbResult.dateArray[i];
-		}        		
-    }
-}
-
-function eventIsToday(eventDate){
-	var today = new Date();
-	var dd = today.getDate().toString();
-	var mm = today.getMonth()+1; //January is 0!
-	var mms = mm.toString();
-	var yyyy = today.getFullYear();
-	
-	if (mms.length == 1){
-		mms = "0" + mms;
-	}
-	
-	if (dd.length == 1)
-		dd = "0" + dd;
-	
-	if (eventDate == yyyy + "-" + mms + "-" + dd){
-		return true;
-	}
-	else{
-		return false;
-	}
-}
 
 
 function showInitialMarkers(type){
@@ -165,7 +172,7 @@ function showInitialMarkers(type){
 
 function getPointFromString(str){
 	var bits = str.split(/,\s*/);
-	point = new google.maps.LatLng(parseFloat(bits[0]),parseFloat(bits[1]));
+	var point = new google.maps.LatLng(parseFloat(bits[0]),parseFloat(bits[1]));
 	return point;
 }
 
@@ -245,5 +252,26 @@ function showValue(newValue)
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
+
+function eventConstructor(id, name, description, specials, date, time, turnus, location){
+	this.id = id;
+	this.name = name;
+	this.description = description;
+	this.specials = specials;
+	this.date = date;
+	this.time = time;
+	this.turnus = turnus;
+	this.location = location;
+}
+
+function locationConstructor(id, name, geoLocation, openingHours, type, likes){
+	this.id = id;
+	this.name = name;
+	this.geoLocation = geoLocation;
+	this.openingHours = openingHours;
+	this.type = type;
+	this.likes = likes;
+}
+
 
     
