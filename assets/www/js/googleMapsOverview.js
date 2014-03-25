@@ -4,8 +4,8 @@ var searchedType
 
 var allLocations = new Array();
 var allEvents = new Array();
-var currentShown = new Array();
 
+var currentShown = new Array;
 var locationMarkerMap = {};
 
 var barMarker = new Array();
@@ -72,10 +72,7 @@ function getAllEvents(){
 }
 
 function createAllMarkers(){
-	var filteredLocationList = getAllLocationsWithEventToday(allLocations, allEvents);
-	createMarkers(filteredLocationList, true);
-	var others = getAllLocationsThatDontMatchFilter(allLocations, filteredLocationList);
-	createMarkers(others, false);
+	createMarkers(allLocations, false);
 }
 
 function createMarkers(locationList, hasEvent){
@@ -92,7 +89,6 @@ function createMarkers(locationList, hasEvent){
 		
 		var marker = new google.maps.Marker({
 			position: locationList[i].geoLocation,
-			animation: google.maps.Animation.DROP,
 		});
 		
 		google.maps.event.addListener(marker, 'click', function() {
@@ -101,9 +97,8 @@ function createMarkers(locationList, hasEvent){
 		  });
 		
 		marker.setIcon(iconString);		
-		
-		addMarkerToList(locationList[i].type, marker);
 		locationMarkerMap[locationList[i].geoLocation] = marker;
+		//currentShown.push(locationList[i]);
 	}
 }
 
@@ -121,20 +116,6 @@ function getColorForMarker(type){
 	return color;
 }
 
-function addMarkerToList(type, marker){
-	if (type == 1){
-		restaurantMarker.push(marker);
-	} else if (type == 2){
-		barMarker.push(marker);
-	} else if (type == 3){
-		clubMarker.push(marker);
-	} else if (type == 4){
-		otherMarker.push(marker);
-	} else{
-		// should be the self pos marker
-	}
-}
-
 function createCircle(color){
 	var circle = {
 			  path: google.maps.SymbolPath.CIRCLE,
@@ -147,53 +128,11 @@ function createCircle(color){
 	return circle;
 }
 
-
-
-function showInitialMarkers(type){
-	if (type == 1){
-		showMarkers(restaurantMarker);
-		document.getElementById("checkRestaurant").checked = true;
-	} else if (type == 2){
-		showMarkers(barMarker);
-		document.getElementById("checkBar").checked = true;
-	} else if (type == 3){
-		showMarkers(clubMarker);
-		document.getElementById("checkClub").checked = true;
-	} else if (type == 4){
-		showMarkers(otherMarker);
-		document.getElementById("checkOther").checked = true;
-	} else if (type == 5){
-		showMarkers(restaurantMarker);
-		showMarkers(barMarker);
-		showMarkers(clubMarker);
-		showMarkers(otherMarker);
-		document.getElementById("checkOther").checked = true;
-		document.getElementById("checkClub").checked = true;
-		document.getElementById("checkRestaurant").checked = true;
-		document.getElementById("checkBar").checked = true;
-	}
-}
-
 function getPointFromString(str){
 	var bits = str.split(/,\s*/);
 	var point = new google.maps.LatLng(parseFloat(bits[0]),parseFloat(bits[1]));
 	return point;
 }
-
-
-function hideMarkers(markers){
-	for (x in markers){
-		markers[x].setMap(null);
-	}
-}
-
-function showMarkers(markers){
-	for (x in markers){
-		markers[x].setMap(map);
-		currentShown.push(markers[x]);
-	}
-}
-
 
 function markCurrentLocation()
 {
@@ -220,34 +159,65 @@ function createCurrentPosMarker(latLng){
 }
 
 function onCheckBarChanged(checkbox){
+	var result = filterByType(allLocations, "2");
 	if (checkbox.checked){
-		showMarkers(barMarker);
+		currentShown = addElements(currentShown, result.matched);
     } else{
-    	hideMarkers(barMarker);
+    	currentShown = removeElements(currentShown, result.matched);
     }
+	showAllMarkersFromCurrentShown();
+}
+
+function showAllMarkersFromCurrentShown(){
+	
+	Object.keys(locationMarkerMap).forEach(function (key) {
+			locationMarkerMap[key].setMap(null);
+		// do something with obj[key]
+		});
+	
+	for (var i in currentShown){
+		locationMarkerMap[currentShown[i].geoLocation].setMap(map);
+	}
+}
+
+function addElements(to, which){
+	for (var i in which){
+		to.push(which[i]);
+	}
+	return to;
+}
+
+function removeElements(from, which){
+	for (var i in which){
+		var idx = from.indexOf(which[i]);
+		if (idx != -1){
+			from.splice(idx, 1);
+		}
+	}
+	return from;
 }
 
 function onCheckClubChanged(checkbox){
 	if (checkbox.checked){
-		showMarkers(clubMarker);
+		
     } else{
-    	hideMarkers(clubMarker);
+    	
     }
 }
 
 function onCheckRestaurantChanged(checkbox){
 	if (checkbox.checked){
-		showMarkers(restaurantMarker);
+		
     } else{
-    	hideMarkers(restaurantMarker);
+    	
     }
 }
 
 function onCheckOtherChanged(checkbox){
 	if (checkbox.checked){
-		showMarkers(otherMarker);
+		
     } else{
-    	hideMarkers(otherMarker);
+    	
     }
 }
 

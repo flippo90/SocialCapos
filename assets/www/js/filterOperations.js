@@ -1,11 +1,16 @@
 function filterByType(allLocations, type){
-	result = new Array();
-	
+	matched = new Array();
+	notMatched = new Array();
 	for (var i in allLocations){
-		if (allLocations[i].type == type)
-			result.push(allLocations[i]);
+		if (allLocations[i].type == type){			
+			matched.push(allLocations[i]);
+		}
+		else{
+			notMatched.push(allLocations[i]);
+		}
 	}
 	
+	var result = new filterResultConstructor(matched, notMatched); 
 	return result;
 }
 
@@ -107,5 +112,10 @@ function getAllLocationsThatDontMatchFilter(allLoc, filteredLocations){
 	}
 	
 	return result;
+}
+
+function filterResultConstructor(matched, notMatched){
+	this.matched = matched;
+	this.notMatched = notMatched;
 }
 
