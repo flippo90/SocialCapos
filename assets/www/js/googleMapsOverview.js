@@ -4,6 +4,9 @@ var searchedType
 
 var allLocations = new Array();
 var allEvents = new Array();
+var currentShown = new Array();
+
+var locationMarkerMap = {};
 
 var barMarker = new Array();
 var clubMarker = new Array();
@@ -100,6 +103,7 @@ function createMarkers(locationList, hasEvent){
 		marker.setIcon(iconString);		
 		
 		addMarkerToList(locationList[i].type, marker);
+		locationMarkerMap[locationList[i].geoLocation] = marker;
 	}
 }
 
@@ -186,6 +190,7 @@ function hideMarkers(markers){
 function showMarkers(markers){
 	for (x in markers){
 		markers[x].setMap(map);
+		currentShown.push(markers[x]);
 	}
 }
 
@@ -244,6 +249,15 @@ function onCheckOtherChanged(checkbox){
     } else{
     	hideMarkers(otherMarker);
     }
+}
+
+function onFilterByCurrentTime(radioBox){
+	if (radioBox.checked){
+		var afterFilterListe = getAllLocationsWithEventNow(allLocations, allEvents);
+		console.log(afterFilterListe);
+	} else{
+		console.log("no checked");
+	}
 }
 
 function showValue(newValue)

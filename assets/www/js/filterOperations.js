@@ -47,6 +47,34 @@ function getAllLocationsWithEventToday(allLocations, allEvents){
 	return result;
 }
 
+function getAllLocationsWithEventNow(allLocations, allEvents){
+	var result = new Array();
+	
+	for (var i in allLocations){
+		for (var k in allEvents){
+			if (allLocations[i].id == allEvents[k].id){
+				if (eventIsNow(allEvents[k].date, allEvents[k].time)){
+					result.push(allLocations[i]);
+				}
+			}
+		}
+	}
+	
+	return result;
+}
+
+function eventIsNow(date, timespan){
+	if (eventIsToday(date)){
+		var currentDate = new Date();
+		var currentHour = currentdate.getHours();
+		var timeSpanArray = timespan.split("-");
+		// wenn ein Event in 4 Stunden beginnt wird es auch noch angezeigt.
+		if (currentHour >= timeSpanArray[0] - 4 && currentHour < timeSpanArray[1])
+			return true;
+	}
+	return false;
+}
+
 function eventIsToday(eventDate){
 	var today = new Date();
 	var dd = today.getDate().toString();
@@ -80,3 +108,4 @@ function getAllLocationsThatDontMatchFilter(allLoc, filteredLocations){
 	
 	return result;
 }
+
