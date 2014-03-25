@@ -158,8 +158,8 @@ function createCurrentPosMarker(latLng){
 	});
 }
 
-function onCheckBarChanged(checkbox){
-	var result = filterByType(allLocations, "2");
+function onTypeFilterChanged(checkbox){
+	var result = filterByType(allLocations, checkbox.value);
 	if (checkbox.checked){
 		currentShown = addElements(currentShown, result.matched);
     } else{
@@ -195,30 +195,6 @@ function removeElements(from, which){
 		}
 	}
 	return from;
-}
-
-function onCheckClubChanged(checkbox){
-	if (checkbox.checked){
-		
-    } else{
-    	
-    }
-}
-
-function onCheckRestaurantChanged(checkbox){
-	if (checkbox.checked){
-		
-    } else{
-    	
-    }
-}
-
-function onCheckOtherChanged(checkbox){
-	if (checkbox.checked){
-		
-    } else{
-    	
-    }
 }
 
 function onFilterByCurrentTime(radioBox){
