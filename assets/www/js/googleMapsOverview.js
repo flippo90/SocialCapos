@@ -17,7 +17,7 @@ var otherMarker = new Array();
 //TODO: entscheiden wie die darstellung von events ist -> nur events zur aktuellen zeit darstellen? Events vom ganzen tag darstellen?
 //		wenn ja wie unterscheidet man events die aktuell sind von den die zwar am selben tag aber in der vergangenheit oder in der zukunft liegen?
 function initialize() {
-
+	document.getElementById('dateInput').value = new Date().toDateInputValue();
 	// init google maps
 	var mapOptions = {
 			center: new google.maps.LatLng(60, 105),
@@ -61,9 +61,15 @@ function getAllEvents(){
         
         success: function(result){
         	for (var i in result.idArray){
-        		var event = new eventConstructor(result.idArray[i], result.dateArray[i], 
-        				result.timeArray[i], result.locationIdArray[i], result.nameArray[i], 
-        				result.descriptionArray[i], result.turnusArray[i], result.specialsArray[i]);
+        		var event = new eventConstructor(
+        				result.idArray[i], 
+        				result.nameArray[i], 
+        				result.descriptionArray[i], 
+        				result.specialsArray[i],
+                		result.dateArray[i], 
+        				result.timeArray[i], 
+        				result.turnusArray[i], 
+                		result.locationIdArray[i]); 
         		allEvents.push(event);
         	}
         	createAllMarkers();
@@ -78,17 +84,10 @@ function createAllMarkers(){
 function createMarkers(locationList, hasEvent){
 
 	for (var i in locationList){
-		var color = getColorForMarker(locationList[i].type);
-		var iconString;
-		
-		if (hasEvent){
-			iconString = 'http://maps.google.com/mapfiles/ms/icons/'+color+'-dot.png';
-		} else{
-			iconString = createCircle(color);
-		}
-		
+	
 		var marker = new google.maps.Marker({
 			position: locationList[i].geoLocation,
+			title: locationList[i].type
 		});
 		
 		google.maps.event.addListener(marker, 'click', function() {
@@ -96,10 +95,22 @@ function createMarkers(locationList, hasEvent){
 		     window.open("eventDetails.html?#" + marker.getPosition() ,"_self");
 		  });
 		
-		marker.setIcon(iconString);		
+		marker.setIcon(getMarkerIcon(locationList[i].type, hasEvent));		
 		locationMarkerMap[locationList[i].geoLocation] = marker;
 		//currentShown.push(locationList[i]);
 	}
+}
+
+function getMarkerIcon(type, hasEvent){
+	var color = getColorForMarker(type);
+	var iconString;
+	
+	if (hasEvent){
+		iconString = 'http://maps.google.com/mapfiles/ms/icons/'+color+'-dot.png';
+	} else{
+		iconString = createCircle(color);
+	}
+	return iconString;
 }
 
 function getColorForMarker(type){
@@ -198,11 +209,26 @@ function removeElements(from, which){
 }
 
 function onFilterByCurrentTime(radioBox){
+	console.log("onFilterByCurrentTime");
 	if (radioBox.checked){
 		var afterFilterListe = getAllLocationsWithEventNow(allLocations, allEvents);
 		console.log(afterFilterListe);
 	} else{
 		console.log("no checked");
+	}
+}
+
+function onFilterByCurrentDate(radio){
+	console.log("onFilterByCurrentDate");
+	if (radio.checked){
+		var result = getAllLocationsWithEventToday(allLocations, allEvents);
+		for (var i in result.matched){
+			var location = result.matched[i];
+			var iconString = getMarkerIcon(location.type, true);
+			locationMarkerMap[location.geoLocation].setIcon(iconString);			
+		}
+	} else{
+		
 	}
 }
 
@@ -232,6 +258,12 @@ function locationConstructor(id, name, geoLocation, openingHours, type, likes){
 	this.type = type;
 	this.likes = likes;
 }
+
+Date.prototype.toDateInputValue = (function() {
+    var local = new Date(this);
+    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+    return local.toJSON().slice(0,10);
+});
 
 
     

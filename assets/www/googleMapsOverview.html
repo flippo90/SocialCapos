@@ -64,14 +64,14 @@
     	</div>
 		<label class="lbl"> Sonstiges </label>
     </div>
+    <label class="lbl2" for="filterByDateCheckbox"> Nach Datum
+    <input type="radio" name="filter" id="filterByDateCheckbox" onclick="onFilterByCurrentDate(this)" checked></input>
+    <input id="dateInput" class="controls" type="date" placeholder="Datum">
     <label class="lbl2" for="filterByCurrentTimeCheckbox"> Jetzt (+-2 Stunden)
-    <input type="radio" name="filter" id="filterByCurrentTimeCheckbox" checked onclick="onFilterByCurrentTime(this)"></input>
+    <input type="radio" name="filter" id="filterByCurrentTimeCheckbox"  onclick="onFilterByCurrentTime(this)"></input>
     <label class="lbl2" for="filterByTimeCheckbox"> Nach Zeit
     <input type="radio" name="filter" id="filterByTimeCheckbox"></input>
     <input id="timeInput" class="controls" type="time" placeholder="Zeit">
-    <label class="lbl2" for="filterByDateCheckbox"> Nach Datum
-    <input type="radio" name="filter" id="filterByDateCheckbox"></input>
-    <input id="dateInput" class="controls" type="date" placeholder="Datum">
     <br>
   </form>
 </section>

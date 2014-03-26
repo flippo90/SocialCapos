@@ -37,18 +37,29 @@ function filterById(allLocations, id){
 }
 
 function getAllLocationsWithEventToday(allLocations, allEvents){
-	var result = new Array();
-	
+	var matched = new Array();
+	var notMatched = new Array();	
+	var foundEvent = false;
 	for (var i in allLocations){
+		var location = allLocations[i];
 		for (var k in allEvents){
-			if (allLocations[i].id == allEvents[k].id){
-				if (eventIsToday(allEvents[k].date)){
-					result.push(allLocations[i]);
+			var event = allEvents[k];
+			if (allLocations[i].id == event.location){
+				if (eventIsToday(event.date)){
+					foundEvent = true;
 				}
 			}
 		}
+		
+		if (foundEvent)
+			matched.push(location);
+		else
+			notMatched.push(location);
+		
+		foundEvent = false;
 	}
 	
+	var result = new filterResultConstructor(matched, notMatched);
 	return result;
 }
 
@@ -71,7 +82,7 @@ function getAllLocationsWithEventNow(allLocations, allEvents){
 function eventIsNow(date, timespan){
 	if (eventIsToday(date)){
 		var currentDate = new Date();
-		var currentHour = currentdate.getHours();
+		var currentHour = currentDate.getHours();
 		var timeSpanArray = timespan.split("-");
 		// wenn ein Event in 4 Stunden beginnt wird es auch noch angezeigt.
 		if (currentHour >= timeSpanArray[0] - 4 && currentHour < timeSpanArray[1])
@@ -100,18 +111,6 @@ function eventIsToday(eventDate){
 	else{
 		return false;
 	}
-}
-
-function getAllLocationsThatDontMatchFilter(allLoc, filteredLocations){
-	var result = new Array();
-	
-	for (var k in allLoc){
-		if ($.inArray(allLoc[k], filteredLocations) == -1){
-			result.push(allLoc[k]);
-		}
-	}
-	
-	return result;
 }
 
 function filterResultConstructor(matched, notMatched){
