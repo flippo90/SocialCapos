@@ -5,19 +5,25 @@ var searchedType
 var allLocations = new Array();
 var allEvents = new Array();
 
-var currentShown = new Array;
+var currentShown = new Array();
 var locationMarkerMap = {};
 
-var barMarker = new Array();
-var clubMarker = new Array();
-var restaurantMarker = new Array();
-var otherMarker = new Array();
-//TODO: Marker zu Events setzen
-//TODO: Locations die zur aktuellen Zeit kein Event haben sollen nur als kleine rote Punkte dargestellt werden
-//TODO: entscheiden wie die darstellung von events ist -> nur events zur aktuellen zeit darstellen? Events vom ganzen tag darstellen?
-//		wenn ja wie unterscheidet man events die aktuell sind von den die zwar am selben tag aber in der vergangenheit oder in der zukunft liegen?
+var timeFilterResult = new Array();
+var dateFilterResult = new Array();
+
+var typeArray = new Array();
+
+google.maps.event.addDomListener(window, 'load', initialize);
 function initialize() {
+	
+	typeArray.push("Restaurant");
+	typeArray.push("Bar");
+	typeArray.push("Club");
+	typeArray.push("Other");
+	
 	document.getElementById('dateInput').value = new Date().toDateInputValue();
+	document.getElementById('timeInput').value = new Date().totimeInputValue();
+	
 	// init google maps
 	var mapOptions = {
 			center: new google.maps.LatLng(60, 105),
@@ -79,6 +85,31 @@ function getAllEvents(){
 
 function createAllMarkers(){
 	createMarkers(allLocations, false);
+	showMarkersIfTypeChecked();
+	adjustTimeFilters();
+}
+
+function adjustTimeFilters(){
+	var dateFilterRadio = document.getElementById('filterByDateCheckbox');
+	var timeFilterRadio = document.getElementById('filterByCurrentTimeCheckbox');
+	console.log(dateFilterRadio.checked);
+	if (dateFilterRadio.checked){
+		onFilterByCurrentDate(dateFilterRadio);
+	} else if (timeFilterRadio.checked){
+		onFilterByCurrentTime(timeFilterRadio);
+	}
+}
+
+function showMarkersIfTypeChecked(){
+
+	for(var i = 0; i < 4; i++){
+		if (document.getElementById('check' + typeArray[i]).checked){
+			var result = filterByType(allLocations, i + 1); // i+1 => because type in db starts at 1 and in array with 0
+			currentShown = addElements(currentShown, result.matched);
+		}
+	}
+	console.log(currentShown)
+	showAllMarkersInList(currentShown);
 }
 
 function createMarkers(locationList, hasEvent){
@@ -99,7 +130,74 @@ function createMarkers(locationList, hasEvent){
 		locationMarkerMap[locationList[i].geoLocation] = marker;
 		//currentShown.push(locationList[i]);
 	}
+	
+	
 }
+
+function onTypeFilterChanged(checkbox){
+	var result = filterByType(allLocations, checkbox.value);
+	if (checkbox.checked){
+		currentShown = addElements(currentShown, result.matched);
+    } else{
+    	currentShown = removeElements(currentShown, result.matched);
+    }
+	showAllMarkersInList(currentShown);
+}
+
+function onFilterByCurrentTime(radioBox){
+	timeFilterResult = getAllLocationsWithEventNow(allLocations, allEvents);
+	setIconsFromFilterResult(dateFilterResult.matched, false);
+	setIconsFromFilterResult(timeFilterResult.matched, true);
+}
+
+function onFilterByCurrentDate(radio){
+	dateFilterResult = getAllLocationsWithEventToday(allLocations, allEvents);
+	setIconsFromFilterResult(timeFilterResult.matched, false);
+	setIconsFromFilterResult(dateFilterResult.matched, true);
+}
+
+function setIconsFromFilterResult(list, hasEvent){
+	for (var i in list){
+		var location = list[i];
+		var iconString = getMarkerIcon(location.type, hasEvent);
+		locationMarkerMap[location.geoLocation].setIcon(iconString);	
+	}
+}
+
+
+function showAllMarkersInList(list){
+	
+	Object.keys(locationMarkerMap).forEach(function (key) {
+			locationMarkerMap[key].setMap(null);
+		});
+	
+	for (var i in list){
+		locationMarkerMap[list[i].geoLocation].setMap(map);
+	}
+}
+
+function addElements(to, which){
+	for (var i in which){
+		to.push(which[i]);
+	}
+	return to;
+}
+
+function removeElements(from, which){
+	for (var i in which){
+		var idx = from.indexOf(which[i]);
+		if (idx != -1){
+			from.splice(idx, 1);
+		}
+	}
+	return from;
+}
+
+function showValue(newValue)
+{
+	document.getElementById("range").innerHTML=newValue;
+}
+
 
 function getMarkerIcon(type, hasEvent){
 	var color = getColorForMarker(type);
@@ -169,76 +267,6 @@ function createCurrentPosMarker(latLng){
 	});
 }
 
-function onTypeFilterChanged(checkbox){
-	var result = filterByType(allLocations, checkbox.value);
-	if (checkbox.checked){
-		currentShown = addElements(currentShown, result.matched);
-    } else{
-    	currentShown = removeElements(currentShown, result.matched);
-    }
-	showAllMarkersFromCurrentShown();
-}
-
-function showAllMarkersFromCurrentShown(){
-	
-	Object.keys(locationMarkerMap).forEach(function (key) {
-			locationMarkerMap[key].setMap(null);
-		// do something with obj[key]
-		});
-	
-	for (var i in currentShown){
-		locationMarkerMap[currentShown[i].geoLocation].setMap(map);
-	}
-}
-
-function addElements(to, which){
-	for (var i in which){
-		to.push(which[i]);
-	}
-	return to;
-}
-
-function removeElements(from, which){
-	for (var i in which){
-		var idx = from.indexOf(which[i]);
-		if (idx != -1){
-			from.splice(idx, 1);
-		}
-	}
-	return from;
-}
-
-function onFilterByCurrentTime(radioBox){
-	console.log("onFilterByCurrentTime");
-	if (radioBox.checked){
-		var afterFilterListe = getAllLocationsWithEventNow(allLocations, allEvents);
-		console.log(afterFilterListe);
-	} else{
-		console.log("no checked");
-	}
-}
-
-function onFilterByCurrentDate(radio){
-	console.log("onFilterByCurrentDate");
-	if (radio.checked){
-		var result = getAllLocationsWithEventToday(allLocations, allEvents);
-		for (var i in result.matched){
-			var location = result.matched[i];
-			var iconString = getMarkerIcon(location.type, true);
-			locationMarkerMap[location.geoLocation].setIcon(iconString);			
-		}
-	} else{
-		
-	}
-}
-
-function showValue(newValue)
-{
-	document.getElementById("range").innerHTML=newValue;
-}
-
-google.maps.event.addDomListener(window, 'load', initialize);
-
 function eventConstructor(id, name, description, specials, date, time, turnus, location){
 	this.id = id;
 	this.name = name;
@@ -263,6 +291,12 @@ Date.prototype.toDateInputValue = (function() {
     var local = new Date(this);
     local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
     return local.toJSON().slice(0,10);
+});
+
+Date.prototype.totimeInputValue = (function() {
+    var local = new Date(this);
+    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+    return local.toJSON().slice(11,16);
 });
 
 

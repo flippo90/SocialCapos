@@ -64,19 +64,28 @@ function getAllLocationsWithEventToday(allLocations, allEvents){
 }
 
 function getAllLocationsWithEventNow(allLocations, allEvents){
-	var result = new Array();
+	var matched = new Array();
+	var notMatched = new Array();
+	var matchedItemFound = false;
 	
 	for (var i in allLocations){
 		for (var k in allEvents){
 			if (allLocations[i].id == allEvents[k].id){
 				if (eventIsNow(allEvents[k].date, allEvents[k].time)){
-					result.push(allLocations[i]);
+					matchedItemFound = true;
 				}
 			}
 		}
+		
+		if (matchedItemFound)
+			matched.push(allLocations[i]);
+		else
+			notMatched.push(allLocations[i]);
+		
+		matchedItemFound = false;
 	}
 	
-	return result;
+	return new filterResultConstructor(matched, notMatched);
 }
 
 function eventIsNow(date, timespan){
