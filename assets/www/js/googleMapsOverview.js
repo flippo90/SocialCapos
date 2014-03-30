@@ -4,6 +4,7 @@ var searchedType
 
 var allLocations = new Array();
 var allEvents = new Array();
+var allLocationsInRadius = new Array();
 
 var currentShown = new Array();
 var locationMarkerMap = {};
@@ -34,9 +35,32 @@ function initialize() {
 		mapOptions);
 	
 	//find my location and set marker to it
-	markCurrentLocation();
+	var currentLoc = markCurrentLocation();
+	
+	var radius = document.getElementById('inputRadius').value;
+	allLocationsInRadius = getAllLocationsInRadius(myGeoLoaction, radius, allLocations)
+	showValue(radius);
 	//set markers from locations to map
 	setAllLocationEntriesToMap();
+	//getAddressFromLatLang(currentLoc);
+}
+
+function getAddressFromLatLang(){
+    console.log("Entering getAddressFromLatLang: " + myGeoLoaction);
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode( { 'latLng': myGeoLoaction}, function(results, status) {
+		console.log("After getting address");
+		console.log(results);
+		if (status == google.maps.GeocoderStatus.OK) {
+			if (results[1]) {
+				console.log(results[1]);
+				alert(results[1].formatted_address);
+			}
+		} else{
+			alert("Geocode was not successful for the following reason: " + status);
+		}
+    });
+    console.log("Entering getAddressFromLatLang()");
 }
 
 function setAllLocationEntriesToMap(){
@@ -145,13 +169,27 @@ function onTypeFilterChanged(checkbox){
 }
 
 function onFilterByCurrentTime(radioBox){
-	timeFilterResult = getAllLocationsWithEventNow(allLocations, allEvents);
+	var date = document.getElementById('dateInput').value;
+	var time = new Date();
+	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time.getHours(), allLocations, allEvents);
 	setIconsFromFilterResult(dateFilterResult.matched, false);
 	setIconsFromFilterResult(timeFilterResult.matched, true);
 }
 
+
+
+function onFilterByTime(radioBox){
+	var date = document.getElementById('dateInput').value;
+	var time = document.getElementById('timeInput').value.split(":");
+	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time[0], allLocations, allEvents);
+	setIconsFromFilterResult(dateFilterResult.matched, false);
+	setIconsFromFilterResult(timeFilterResult.matched, true);
+	getAddressFromLatLang();
+}
+
 function onFilterByCurrentDate(radio){
-	dateFilterResult = getAllLocationsWithEventToday(allLocations, allEvents);
+	console.log("date value: " + document.getElementById('dateInput').value);
+	dateFilterResult = getAllLocationsWithEventAtDate(document.getElementById('dateInput').value, allLocations, allEvents);
 	setIconsFromFilterResult(timeFilterResult.matched, false);
 	setIconsFromFilterResult(dateFilterResult.matched, true);
 }
@@ -196,6 +234,9 @@ function removeElements(from, which){
 function showValue(newValue)
 {
 	document.getElementById("range").innerHTML=newValue;
+	allLocationsInRadius = getAllLocationsInRadius(myGeoLoaction, newValue, allLocations)
+	showAllMarkersInList(allLocationsInRadius);
+	
 }
 
 
@@ -247,7 +288,6 @@ function markCurrentLocation()
 {
 	if (navigator.geolocation)
 	{
-		console.log("try to get location");
 		navigator.geolocation.getCurrentPosition(showPosition);
 	}
 	else{console.log("Geolocation is not supported by this browser.");}
@@ -255,9 +295,9 @@ function markCurrentLocation()
 
 function showPosition(position)
 {
-	var myPos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-	map.setCenter(myPos);
-	createCurrentPosMarker(myPos);
+	myGeoLoaction = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+	map.setCenter(myGeoLoaction);
+	createCurrentPosMarker(myGeoLoaction);
 }
 
 function createCurrentPosMarker(latLng){
