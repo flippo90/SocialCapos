@@ -9,11 +9,12 @@
     <meta charset="utf-8">
 
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
-
-  <script type="text/javascript" charset="utf-8" src="js/googleMapsOverview.js"></script>
-  <script type="text/javascript" charset="utf-8" src="js/filterOperations.js"></script>
-  <script language="JavaScript" type="text/javascript" src="js/jquery-2.1.0.js"></script>
-  <script type="text/javascript" charset="utf-8" src="js/mainPage.js"></script>
+  
+  	<script type="text/javascript" charset="utf-8" src="js/googleMapsOverview.js"></script>
+  	<script type="text/javascript" charset="utf-8" src="js/filterOperations.js"></script>
+  	<script language="JavaScript" type="text/javascript" src="js/jquery-2.1.0.js"></script>
+  	<script type="text/javascript" charset="utf-8" src="js/mainPage.js"></script>
+	<script type="text/javascript" charset="utf-8" src="js/createTestData.js"></script>
   
   </head>
   <body>
@@ -96,7 +97,7 @@
 	</div>
     <div class="col-sm-10">
 		<label for="inputRadius" class="col-sm-2 control-label">Radius (KM)</label>
-		<input id="inputRadius" type="range" min="0" max="50" value="1" step="1" onchange="showValue(this.value)" />
+		<input id="inputRadius" type="range" min="0" max="500" value="1" step="1" onchange="showValue(this.value)" />
 		<span id="range">0</span>
     </div>
   </div>
