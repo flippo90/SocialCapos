@@ -23,7 +23,10 @@
     <a href="#" id="btnEinstellungen" class="btn btn-primary right" data-href="einstellungen" >Einstellungen</a>
 </header>
 <main id="section-main" class="section-main">
-    <div id="map-canvas"></div>
+    <div id="map-canvas" style="display: none;"></div>
+    <div id="list-canvas" style="display: none;">
+	      <table id="locationList" border="3" frame="box"></table>
+  	</div>
 </main>
 <section id="section-suche" class="section-suche">
   <h2>Filter</h2>
@@ -86,18 +89,20 @@
                  name = "resultDisplay"
                  id = "displayMap"
                  value = "map"
-                 checked = "checked" />
+                 checked = "checked" 
+                 onclick="onShowLocations(this.value)"/>
           <label for = "displayMap">Karte</label>
           
           <input type = "radio"
                  name = "resultDisplay"
                  id = "displayList"
-                 value = "list" />
+                 value = "list" 
+                 onclick="onShowLocations(this.value)"/>
     	<label for = "displayList">Liste</label>
 	</div>
     <div class="col-sm-10">
 		<label for="inputRadius" class="col-sm-2 control-label">Radius (KM)</label>
-		<input id="inputRadius" type="range" min="0" max="500" value="1" step="1" onchange="showValue(this.value)" />
+		<input id="inputRadius" type="range" min="0" max="50" value="1" step="1" onchange="showValue(this.value)" />
 		<span id="range">0</span>
     </div>
   </div>
@@ -122,6 +127,7 @@
       </div>
     </div>
   </div>
+  
 </form>
 </section>
 </body>

@@ -35,14 +35,13 @@ function initialize() {
 		mapOptions);
 	
 	//find my location and set marker to it
-	var currentLoc = markCurrentLocation();
+	markCurrentLocation();	        	
 	
-	var radius = document.getElementById('inputRadius').value;
-	allLocationsInRadius = getAllLocationsInRadius(myGeoLoaction, radius, allLocations)
-	showValue(radius);
 	//set markers from locations to map
 	setAllLocationEntriesToMap();
 	//getAddressFromLatLang(currentLoc);
+	
+	onShowLocations("map");
 }
 
 function getAddressFromLatLang(){
@@ -97,15 +96,29 @@ function getAllEvents(){
                 		result.locationIdArray[i]); 
         		allEvents.push(event);
         	}
+
         	createAllMarkers();
+        	
+        	
         }
     })
 }
 
+function adjustAllFilter(){
+	var radius = document.getElementById('inputRadius').value;
+	showValue(radius);
+	
+	showMarkersIfTypeChecked();
+	
+	adjustTimeFilters();
+	
+	createTable(currentShown);
+}
+
 function createAllMarkers(){
 	createMarkers(allLocations, false);
-	showMarkersIfTypeChecked();
-	adjustTimeFilters();
+	//showMarkersIfTypeChecked();
+	//adjustTimeFilters();
 }
 
 function adjustTimeFilters(){
@@ -122,11 +135,28 @@ function showMarkersIfTypeChecked(){
 
 	for(var i = 0; i < 4; i++){
 		if (document.getElementById('check' + typeArray[i]).checked){
-			var result = filterByType(allLocations, i + 1); // i+1 => because type in db starts at 1 and in array with 0
+			var result = filterByType(allLocationsInRadius, i + 1); // i+1 => because type in db starts at 1 and in array with 0
 			currentShown = addElements(currentShown, result.matched);
 		}
 	}
 	showAllMarkersInList(currentShown);
+	
+}
+
+function createTable(locations){
+	var table = document.getElementById('locationList');
+	var html = "";
+	for(var i in locations){
+		html = html + "<tr>";
+		html = html + "<td>" + locations[i].id + "</td>";
+		html = html + "<td>" + locations[i].name + "</td>";
+		html = html + "<td>" + locations[i].geoLocation + "</td>";
+		html = html + "<td>" + locations[i].type + "</td>";
+		html = html + "<td>" + locations[i].openingHours + "</td>";
+		html = html + "<td>" + locations[i].likes + "</td>";
+		html = html + "</tr>"
+	}
+	table.innerHTML = html;
 }
 
 function createMarkers(locationList, hasEvent){
@@ -174,16 +204,26 @@ function onFilterByCurrentTime(radioBox){
 function onFilterByTime(radioBox){
 	var date = document.getElementById('dateInput').value;
 	var time = document.getElementById('timeInput').value.split(":");
-	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time[0], allLocations, allEvents);
+	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time[0], allLocationsInRadius, allEvents);
 	setIconsFromFilterResult(dateFilterResult.matched, false);
 	setIconsFromFilterResult(timeFilterResult.matched, true);
 	getAddressFromLatLang();
 }
 
 function onFilterByCurrentDate(radio){
-	dateFilterResult = getAllLocationsWithEventAtDate(document.getElementById('dateInput').value, allLocations, allEvents);
+	dateFilterResult = getAllLocationsWithEventAtDate(document.getElementById('dateInput').value, allLocationsInRadius, allEvents);
 	setIconsFromFilterResult(timeFilterResult.matched, false);
 	setIconsFromFilterResult(dateFilterResult.matched, true);
+}
+
+function onShowLocations(value){
+	if (value == "map"){
+		document.getElementById('map-canvas').style.display = "block";
+		document.getElementById('list-canvas').style.display = "none";
+	} else if (value == "list"){
+		document.getElementById('map-canvas').style.display = "none";
+		document.getElementById('list-canvas').style.display = "block";
+	}
 }
 
 function setIconsFromFilterResult(list, hasEvent){
@@ -196,7 +236,12 @@ function setIconsFromFilterResult(list, hasEvent){
 
 
 function showAllMarkersInList(list){
-	
+
+	showMapEntries(list);
+	createTable(list);
+}
+
+function showMapEntries(list){
 	Object.keys(locationMarkerMap).forEach(function (key) {
 			locationMarkerMap[key].setMap(null);
 		});
@@ -227,8 +272,7 @@ function showValue(newValue)
 {
 	document.getElementById("range").innerHTML=newValue;
 	allLocationsInRadius = getAllLocationsInRadius(myGeoLoaction, newValue, allLocations)
-	showAllMarkersInList(allLocationsInRadius);
-	
+	showAllMarkersInList(allLocationsInRadius);	
 }
 
 
@@ -280,16 +324,18 @@ function markCurrentLocation()
 {
 	if (navigator.geolocation)
 	{
-		navigator.geolocation.getCurrentPosition(showPosition);
+		navigator.geolocation.getCurrentPosition(adjustFilters);
 	}
 	else{console.log("Geolocation is not supported by this browser.");}
 }
 
-function showPosition(position)
+function adjustFilters(position)
 {
 	myGeoLoaction = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 	map.setCenter(myGeoLoaction);
 	createCurrentPosMarker(myGeoLoaction);
+	
+	adjustAllFilter();
 }
 
 function createCurrentPosMarker(latLng){
