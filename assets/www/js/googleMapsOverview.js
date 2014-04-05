@@ -16,48 +16,31 @@ var typeArray = new Array();
 
 google.maps.event.addDomListener(window, 'load', initialize);
 function initialize() {
-	
-	typeArray.push("Restaurant");
-	typeArray.push("Bar");
-	typeArray.push("Club");
-	typeArray.push("Other");
-	
-	document.getElementById('dateInput').value = new Date().toDateInputValue();
-	document.getElementById('timeInput').value = new Date().totimeInputValue();
-	
-	// init google maps
-	var mapOptions = {
-			center: new google.maps.LatLng(60, 105),
-			zoom: 14
-		};
-		
-	map = new google.maps.Map(document.getElementById('map-canvas'),
-		mapOptions);
-	
-	//find my location and set marker to it
-	markCurrentLocation();	        	
-	
-	//set markers from locations to map
-	setAllLocationEntriesToMap();
-	//getAddressFromLatLang(currentLoc);
-	
-	onShowLocations("map");
+	initGoogleMaps();
+	createTypeArray();
+	initDateAndTimeFilterValues();
+	initRadiusValue();
+	fillMap();	
 }
 
-function getAddressFromLatLang(){
-    var geocoder = new google.maps.Geocoder();
-    geocoder.geocode( { 'latLng': myGeoLoaction}, function(results, status) {
-		if (status == google.maps.GeocoderStatus.OK) {
-			if (results[1]) {
-				console.log("adress from latlang: " + results[1]);
-			}
-		} else{
-			alert("Geocode was not successful for the following reason: " + status);
-		}
-    });
+function fillMap()
+{
+	if (navigator.geolocation)
+	{
+		navigator.geolocation.getCurrentPosition(locationFound);
+	}
+	else{console.log("Geolocation is not supported by this browser.");}
+	console.log("finished markCurrentLocation");
 }
 
-function setAllLocationEntriesToMap(){
+function locationFound(position)
+{
+	markCurrentPosition(position)
+	getAllLocationsWithEvents();
+}
+
+
+function getAllLocationsWithEvents(){
 	
 	$.ajax({
         type: "GET",
@@ -65,12 +48,7 @@ function setAllLocationEntriesToMap(){
         dataType: "json",
 
         success: function(result){
-        	for (var loc in result.geoLocations){
-        		var geoLocString = getPointFromString(result.geoLocations[loc].slice(1));
-        		var location = new locationConstructor(result.id[loc], result.names[loc], 
-        				geoLocString, result.openingHours[loc], result.types[loc], result.likes[loc])
-        		allLocations.push(location)
-            }
+        	allLocations = getLocationsFromResult(result);        	
         	getAllEvents();
         }
     })
@@ -84,70 +62,110 @@ function getAllEvents(){
         dataType: "json",
         
         success: function(result){
-        	for (var i in result.idArray){
-        		var event = new eventConstructor(
-        				result.idArray[i], 
-        				result.nameArray[i], 
-        				result.descriptionArray[i], 
-        				result.specialsArray[i],
-                		result.dateArray[i], 
-        				result.timeArray[i], 
-        				result.turnusArray[i], 
-                		result.locationIdArray[i]); 
-        		allEvents.push(event);
-        	}
-
-        	createAllMarkers();
-        	
-        	
+        	allEvents = getEventsFromResult(result);
+        	createMarkers(allLocations);
+        	adjustAllFilter();
+        	onShowLocations("map");
         }
     })
 }
 
-function adjustAllFilter(){
-	var radius = document.getElementById('inputRadius').value;
-	showValue(radius);
+function createMarkers(locationList, hasEvent){
+
+	for (var i in locationList){
 	
-	showMarkersIfTypeChecked();
-	
-	adjustTimeFilters();
-	
-	createTable(currentShown);
+		var marker = new google.maps.Marker({
+			position: locationList[i].geoLocation,
+			title: locationList[i].id
+		});
+		
+		google.maps.event.addListener(marker, 'click', function() {
+		     //show event details page
+		     window.open("eventDetails.html?#" + marker.getPosition() ,"_self");
+		  });
+		
+		marker.setIcon(getMarkerIcon(locationList[i].type, false));		
+		locationMarkerMap[locationList[i].geoLocation] = marker;
+		//currentShown.push(locationList[i]);
+	}
 }
 
-function createAllMarkers(){
-	createMarkers(allLocations, false);
-	//showMarkersIfTypeChecked();
-	//adjustTimeFilters();
+
+function adjustAllFilter(){
+	var radius = document.getElementById('inputRadius').value;	
+	allLocationsInRadius = getAllLocationsInRadius(myGeoLoaction, radius, allLocations)
+	
+	currentShown = showMarkersIfTypeChecked(allLocationsInRadius);
+	
+	adjustTimeFilters(currentShown);
+	
+	createTable(currentShown);
+	
+	showAllMarkersInList(currentShown);
+}
+
+function showMarkersIfTypeChecked(list){
+	var shown = new Array();
+	
+	for(var i = 0; i < 4; i++){
+		if (document.getElementById('check' + typeArray[i]).checked){
+			var result = filterByType(list, i + 1); // i+1 => because type in db starts at 1 and in array with 0
+			shown = addElements(shown, result.matched);
+		}
+	}
+	return shown;
 }
 
 function adjustTimeFilters(){
 	var dateFilterRadio = document.getElementById('filterByDateCheckbox');
 	var timeFilterRadio = document.getElementById('filterByCurrentTimeCheckbox');
 	if (dateFilterRadio.checked){
-		onFilterByCurrentDate(dateFilterRadio);
+		onFilterByCurrentDate();
 	} else if (timeFilterRadio.checked){
-		onFilterByCurrentTime(timeFilterRadio);
+		onFilterByCurrentTime();
 	}
 }
 
-function showMarkersIfTypeChecked(){
-
-	for(var i = 0; i < 4; i++){
-		if (document.getElementById('check' + typeArray[i]).checked){
-			var result = filterByType(allLocationsInRadius, i + 1); // i+1 => because type in db starts at 1 and in array with 0
-			currentShown = addElements(currentShown, result.matched);
-		}
-	}
-	showAllMarkersInList(currentShown);
-	
+function onFilterByCurrentTime(){
+	var date = document.getElementById('dateInput').value;
+	var time = new Date();
+	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time.getHours(), allLocationsInRadius, allEvents);
+	setIconsFromFilterResult(dateFilterResult.matched, false);
+	setIconsFromFilterResult(timeFilterResult.matched, true);
+	createTable(allLocationsInRadius);
 }
+
+function onFilterByTime(){
+	var date = document.getElementById('dateInput').value;
+	var time = document.getElementById('timeInput').value.split(":");
+	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time[0], allLocationsInRadius, allEvents);
+	setIconsFromFilterResult(dateFilterResult.matched, false);
+	setIconsFromFilterResult(timeFilterResult.matched, true);
+	createTable(allLocationsInRadius);
+}
+
+function onFilterByCurrentDate(){
+	dateFilterResult = getAllLocationsWithEventAtDate(document.getElementById('dateInput').value, allLocationsInRadius, allEvents);
+	setIconsFromFilterResult(timeFilterResult.matched, false);
+	setIconsFromFilterResult(dateFilterResult.matched, true);
+	createTable(allLocationsInRadius);
+}
+
+
 
 function createTable(locations){
 	var table = document.getElementById('locationList');
 	var html = "";
 	for(var i in locations){
-		html = html + "<tr>";
+		
+		var color;
+		if (!(locationMarkerMap[locations[i].geoLocation].icon instanceof Object)){
+			color = "#00FF00";
+		}
+		else{
+			color = "";
+		}
+		html = html + "<tr bgcolor=\"" + color + "\">";
 		html = html + "<td>" + locations[i].id + "</td>";
 		html = html + "<td>" + locations[i].name + "</td>";
 		html = html + "<td>" + locations[i].geoLocation + "</td>";
@@ -159,61 +177,16 @@ function createTable(locations){
 	table.innerHTML = html;
 }
 
-function createMarkers(locationList, hasEvent){
 
-	for (var i in locationList){
-	
-		var marker = new google.maps.Marker({
-			position: locationList[i].geoLocation,
-			title: locationList[i].type
-		});
-		
-		google.maps.event.addListener(marker, 'click', function() {
-		     //show event details page
-		     window.open("eventDetails.html?#" + marker.getPosition() ,"_self");
-		  });
-		
-		marker.setIcon(getMarkerIcon(locationList[i].type, hasEvent));		
-		locationMarkerMap[locationList[i].geoLocation] = marker;
-		//currentShown.push(locationList[i]);
-	}
-	
-	
-}
 
 function onTypeFilterChanged(checkbox){
-	var result = filterByType(allLocations, checkbox.value);
+	var result = filterByType(allLocationsInRadius, checkbox.value);
 	if (checkbox.checked){
 		currentShown = addElements(currentShown, result.matched);
     } else{
     	currentShown = removeElements(currentShown, result.matched);
     }
 	showAllMarkersInList(currentShown);
-}
-
-function onFilterByCurrentTime(radioBox){
-	var date = document.getElementById('dateInput').value;
-	var time = new Date();
-	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time.getHours(), allLocations, allEvents);
-	setIconsFromFilterResult(dateFilterResult.matched, false);
-	setIconsFromFilterResult(timeFilterResult.matched, true);
-}
-
-
-
-function onFilterByTime(radioBox){
-	var date = document.getElementById('dateInput').value;
-	var time = document.getElementById('timeInput').value.split(":");
-	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time[0], allLocationsInRadius, allEvents);
-	setIconsFromFilterResult(dateFilterResult.matched, false);
-	setIconsFromFilterResult(timeFilterResult.matched, true);
-	getAddressFromLatLang();
-}
-
-function onFilterByCurrentDate(radio){
-	dateFilterResult = getAllLocationsWithEventAtDate(document.getElementById('dateInput').value, allLocationsInRadius, allEvents);
-	setIconsFromFilterResult(timeFilterResult.matched, false);
-	setIconsFromFilterResult(dateFilterResult.matched, true);
 }
 
 function onShowLocations(value){
@@ -271,8 +244,7 @@ function removeElements(from, which){
 function showValue(newValue)
 {
 	document.getElementById("range").innerHTML=newValue;
-	allLocationsInRadius = getAllLocationsInRadius(myGeoLoaction, newValue, allLocations)
-	showAllMarkersInList(allLocationsInRadius);	
+	adjustAllFilter();
 }
 
 
@@ -320,22 +292,12 @@ function getPointFromString(str){
 	return point;
 }
 
-function markCurrentLocation()
-{
-	if (navigator.geolocation)
-	{
-		navigator.geolocation.getCurrentPosition(adjustFilters);
-	}
-	else{console.log("Geolocation is not supported by this browser.");}
-}
 
-function adjustFilters(position)
-{
+
+function markCurrentPosition(position){
 	myGeoLoaction = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 	map.setCenter(myGeoLoaction);
 	createCurrentPosMarker(myGeoLoaction);
-	
-	adjustAllFilter();
 }
 
 function createCurrentPosMarker(latLng){
@@ -343,6 +305,76 @@ function createCurrentPosMarker(latLng){
 		position: latLng,
 		map: map,
 	});
+}
+
+function getAddressFromLatLang(){
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode( { 'latLng': myGeoLoaction}, function(results, status) {
+		if (status == google.maps.GeocoderStatus.OK) {
+			if (results[1]) {
+				console.log("adress from latlang: " + results[1]);
+			}
+		} else{
+			alert("Geocode was not successful for the following reason: " + status);
+		}
+    });
+}
+
+function getLocationsFromResult(result){
+	var locations = new Array();
+	for (var loc in result.geoLocations){
+		var geoLocString = getPointFromString(result.geoLocations[loc].slice(1));
+		var location = new locationConstructor(result.id[loc], result.names[loc], 
+				geoLocString, result.openingHours[loc], result.types[loc], result.likes[loc])
+		locations.push(location)
+    }
+	return locations;
+}
+
+
+function getEventsFromResult(result){
+	var events = new Array();
+	for (var i in result.idArray){
+		var event = new eventConstructor(
+				result.idArray[i], 
+				result.nameArray[i], 
+				result.descriptionArray[i], 
+				result.specialsArray[i],
+        		result.dateArray[i], 
+				result.timeArray[i], 
+				result.turnusArray[i], 
+        		result.locationIdArray[i]); 
+		events.push(event);
+	}
+	return events;
+}
+
+function initGoogleMaps(){
+	var mapOptions = {
+			center: new google.maps.LatLng(60, 105),
+			zoom: 14
+		};
+		
+	map = new google.maps.Map(document.getElementById('map-canvas'),
+		mapOptions);
+}
+
+function initDateAndTimeFilterValues(){
+	document.getElementById('dateInput').value = new Date().toDateInputValue();
+	document.getElementById('timeInput').value = new Date().totimeInputValue();
+
+}
+
+function initRadiusValue(){
+	var radius = document.getElementById('inputRadius').value;
+	showValue(radius);
+}
+
+function createTypeArray(){
+	typeArray.push("Restaurant");
+	typeArray.push("Bar");
+	typeArray.push("Club");
+	typeArray.push("Other");
 }
 
 function eventConstructor(id, name, description, specials, date, time, turnus, location){
