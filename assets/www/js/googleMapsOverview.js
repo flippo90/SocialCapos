@@ -65,7 +65,7 @@ function getAllEvents(){
         	allEvents = getEventsFromResult(result);
         	createMarkers(allLocations);
         	adjustAllFilter();
-        	onShowLocations("map");
+        	//onShowLocations("map");
         }
     })
 }
@@ -351,12 +351,10 @@ function getEventsFromResult(result){
 
 function initGoogleMaps(){
 	var mapOptions = {
-			center: new google.maps.LatLng(60, 105),
 			zoom: 14
 		};
 		
-	map = new google.maps.Map(document.getElementById('map-canvas'),
-		mapOptions);
+	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 }
 
 function initDateAndTimeFilterValues(){
