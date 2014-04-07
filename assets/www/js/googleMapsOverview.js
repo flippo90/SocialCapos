@@ -65,7 +65,6 @@ function getAllEvents(){
         	allEvents = getEventsFromResult(result);
         	createMarkers(allLocations);
         	adjustAllFilter();
-        	//onShowLocations("map");
         }
     })
 }
@@ -86,7 +85,6 @@ function createMarkers(locationList, hasEvent){
 		
 		marker.setIcon(getMarkerIcon(locationList[i].type, false));		
 		locationMarkerMap[locationList[i].geoLocation] = marker;
-		//currentShown.push(locationList[i]);
 	}
 }
 
@@ -122,33 +120,39 @@ function adjustTimeFilters(){
 	if (dateFilterRadio.checked){
 		onFilterByCurrentDate();
 	} else if (timeFilterRadio.checked){
-		onFilterByCurrentTime();
+		onFilterByTime();
 	}
 }
 
 function onFilterByCurrentTime(){
 	var date = document.getElementById('dateInput').value;
 	var time = new Date();
-	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time.getHours(), allLocationsInRadius, allEvents);
-	setIconsFromFilterResult(dateFilterResult.matched, false);
-	setIconsFromFilterResult(timeFilterResult.matched, true);
-	createTable(allLocationsInRadius);
+	onFilterByTimeAndDate(date, time.getHours());
 }
 
 function onFilterByTime(){
 	var date = document.getElementById('dateInput').value;
 	var time = document.getElementById('timeInput').value.split(":");
-	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time[0], allLocationsInRadius, allEvents);
+	var timeInt = parseInt(time[0]);
+	onFilterByTimeAndDate(date, timeInt);
+}
+
+
+//time has to be a number
+function onFilterByTimeAndDate(date, time){
+	timeFilterResult = new Array();
+	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time, allLocationsInRadius, allEvents);
+	console.log("timeFilterResult.matched: " + timeFilterResult.matched);
 	setIconsFromFilterResult(dateFilterResult.matched, false);
 	setIconsFromFilterResult(timeFilterResult.matched, true);
-	createTable(allLocationsInRadius);
+	createTable(currentShown);
 }
 
 function onFilterByCurrentDate(){
 	dateFilterResult = getAllLocationsWithEventAtDate(document.getElementById('dateInput').value, allLocationsInRadius, allEvents);
 	setIconsFromFilterResult(timeFilterResult.matched, false);
 	setIconsFromFilterResult(dateFilterResult.matched, true);
-	createTable(allLocationsInRadius);
+	createTable(currentShown);
 }
 
 
@@ -189,11 +193,11 @@ function onTypeFilterChanged(checkbox){
 	showAllMarkersInList(currentShown);
 }
 
-function onShowLocations(value){
-	if (value == "map"){
+function onShowLocations(checked){
+	if (checked == true){
 		document.getElementById('map-canvas').style.display = "block";
 		document.getElementById('list-canvas').style.display = "none";
-	} else if (value == "list"){
+	} else{
 		document.getElementById('map-canvas').style.display = "none";
 		document.getElementById('list-canvas').style.display = "block";
 	}

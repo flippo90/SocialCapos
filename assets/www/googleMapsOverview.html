@@ -19,8 +19,14 @@
   </head>
   <body>
 <header id="section-header" class="section-header">
-    <a href="#" id="btnSuche" class="btn btn-primary" data-href="suche">Schnellfinder</a>
-    <a href="#" id="btnEinstellungen" class="btn btn-primary right" data-href="einstellungen" >Einstellungen</a>
+    <a href="#" id="btnSuche" class="btn btn-primary" data-href="suche">Filter</a> 
+	<div class="otherswitch">
+    	<input type="checkbox" name="checkClub" class="otherswitch-checkbox" id="bla" onclick="onShowLocations(this.checked)" checked>
+    	<label class="otherswitch-label" for="bla">
+    		<div class="otherswitch-inner"></div>
+    		<div class="otherswitch-switch"></div>
+		</label>
+	</div>	
 </header>
 <main id="section-main" class="section-main">
     <div id="map-canvas" ></div>
@@ -29,13 +35,10 @@
   	</div>
 </main>
 <section id="section-suche" class="section-suche">
-  <h2>Filter</h2>
   <p>Filtereinstellungen f&uuml;r die angezeigten Locations und Events</p>
   <form role="form">
 	<div class="form-group">
-    	<!--<label for="exampleInputEmail1">Locationtyp</label>-->
-      	
-      	<div class="onoffswitch">
+    	<div class="onoffswitch">
 	    	<input type="checkbox" name="checkBar" class="onoffswitch-checkbox" id="checkBar" value="2" onclick="onTypeFilterChanged(this)" checked>
 	    	<label class="onoffswitch-label" for="checkBar">
         		<div class="onoffswitch-inner"></div>
@@ -68,15 +71,25 @@
     	</div>
 		<label class="lbl"> Sonstiges </label>
     </div>
-    <label class="lbl2" for="filterByDateCheckbox"> Nach Datum
-    <input type="radio" name="filter" id="filterByDateCheckbox" onclick="onFilterByCurrentDate()" checked></input>
-    <input id="dateInput" class="controls" type="date" placeholder="Datum">
-    <label class="lbl2" for="filterByCurrentTimeCheckbox"> Jetzt (+-2 Stunden)
-    <input type="radio" name="filter" id="filterByCurrentTimeCheckbox"  onclick="onFilterByCurrentTime()"></input>
-    <label class="lbl2" for="filterByTimeCheckbox"> Nach Zeit
-    <input type="radio" name="filter" id="filterByTimeCheckbox" onclick="onFilterByTime()"></input>
-    <input id="timeInput" class="controls" type="time" placeholder="Zeit">
-    <br>
+    <div>
+	    <label class="lbl2" for="filterByDateCheckbox"> Nach Datum
+	    <input type="radio" name="filter" id="filterByDateCheckbox" onclick="onFilterByCurrentDate()" checked></input>
+	    <input id="dateInput" class="controls" type="date" placeholder="Datum">
+	    <label class="lbl2" for="filterByCurrentTimeCheckbox"> Jetzt (+-2 Stunden)
+	    <input type="radio" name="filter" id="filterByCurrentTimeCheckbox"  onclick="onFilterByCurrentTime()"></input>
+	    <label class="lbl2" for="filterByTimeCheckbox"> Nach Zeit
+	    <input type="radio" name="filter" id="filterByTimeCheckbox" onclick="onFilterByTime()"></input>
+	    <input id="timeInput" class="controls" type="time" placeholder="Zeit">
+    </div>
+    <div>
+		<input id="inputRadius" type="range" min="0" max="50" value="1" step="1" onchange="showValue(this.value)">Radius:</input>
+		<span id="range">0</span>
+    </div>
+    <div class="radio">
+		<input name="filterByPlace" type="radio"value="aktuellerStandort">	aktuellen Standort verwenden
+	</div>
+	<input name="filterByPlace" type="radio" for="inputOrt">Ort</input>
+    <input id="inputOrt" placeholder="Ort">
   </form>
 </section>
 
@@ -100,34 +113,8 @@
                  onclick="onShowLocations(this.value)"/>
     	<label for = "displayList">Liste</label>
 	</div>
-    <div class="col-sm-10">
-		<label for="inputRadius" class="col-sm-2 control-label">Radius (KM)</label>
-		<input id="inputRadius" type="range" min="0" max="50" value="1" step="1" onchange="showValue(this.value)" />
-		<span id="range">0</span>
-    </div>
+    
   </div>
-	<div class="radio">
-		<label>
-			<input type="radio" name="optionsRadios" id="optionsRadios1" value="aktuellerStandort" >
-				aktuellen Standort verwenden
-		</label>
-	</div>
-  <div class="form-group">
-    <label for="inputOrt" class="col-sm-2 control-label">Ort</label>
-    <div class="col-sm-10">
-      <input type="password" class="form-control" id="inputOrt" placeholder="Ort">
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox"> Einstellungen merken
-        </label>
-      </div>
-    </div>
-  </div>
-  
 </form>
 </section>
 </body>
