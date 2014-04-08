@@ -72,24 +72,23 @@
 		<label class="lbl"> Sonstiges </label>
     </div>
     <div>
-	    <label class="lbl2" for="filterByDateCheckbox"> Nach Datum
-	    <input type="radio" name="filter" id="filterByDateCheckbox" onclick="onFilterByCurrentDate()" checked></input>
-	    <input id="dateInput" class="controls" type="date" placeholder="Datum">
-	    <label class="lbl2" for="filterByCurrentTimeCheckbox"> Jetzt (+-2 Stunden)
-	    <input type="radio" name="filter" id="filterByCurrentTimeCheckbox"  onclick="onFilterByCurrentTime()"></input>
-	    <label class="lbl2" for="filterByTimeCheckbox"> Nach Zeit
-	    <input type="radio" name="filter" id="filterByTimeCheckbox" onclick="onFilterByTime()"></input>
-	    <input id="timeInput" class="controls" type="time" placeholder="Zeit">
+	    <input type="radio" name="filter" id="filterByDateCheckbox" onclick="onFilterByCurrentDate()" checked>Nach Datum</input>
+	    <input id="dateInput" type="date" placeholder="Datum">
+	</div>
+	<div>    
+	    <input type="radio" name="filter" id="filterByTimeCheckbox" onclick="onFilterByTime()">Nach Zeit</input>
+	    <input id="timeInput" type="time" placeholder="Zeit">
+	    <button id="currentTimeBtn" onclick="onFilterByCurrentTime()">Jetzt</button>
     </div>
     <div>
 		<input id="inputRadius" type="range" min="0" max="50" value="1" step="1" onchange="showValue(this.value)">Radius:</input>
 		<span id="range">0</span>
     </div>
     <div class="radio">
-		<input name="filterByPlace" type="radio"value="aktuellerStandort">	aktuellen Standort verwenden
+		<input name="filterByPlace" type="radio" value="currPos" onclick="centerLocationChooser(this.value)" checked>aktuellen Standort verwenden</input>
 	</div>
-	<input name="filterByPlace" type="radio" for="inputOrt">Ort</input>
-    <input id="inputOrt" placeholder="Ort">
+	<input name="filterByPlace" id="filterByPlaceCheckbox" type="radio" for="inputOrt" value="place" onclick="centerLocationChooser(this.value)"></input>
+    <input id="inputOrt" placeholder="Ort" onblur="placeInputFocusLost()"></input>
   </form>
 </section>
 

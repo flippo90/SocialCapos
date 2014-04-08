@@ -1,6 +1,6 @@
 var map;
 var myGeoLoaction;
-var searchedType
+var searchedType;
 
 var allLocations = new Array();
 var allEvents = new Array();
@@ -14,8 +14,16 @@ var dateFilterResult = new Array();
 
 var typeArray = new Array();
 
+var centerLocation;
+
+var autocomplete
+
+var currentCenterMarker;
+
 google.maps.event.addDomListener(window, 'load', initialize);
 function initialize() {
+	var input = document.getElementById('inputOrt');
+	autocomplete = new google.maps.places.Autocomplete(input);
 	initGoogleMaps();
 	createTypeArray();
 	initDateAndTimeFilterValues();
@@ -30,12 +38,15 @@ function fillMap()
 		navigator.geolocation.getCurrentPosition(locationFound);
 	}
 	else{console.log("Geolocation is not supported by this browser.");}
-	console.log("finished markCurrentLocation");
 }
 
 function locationFound(position)
 {
-	markCurrentPosition(position)
+	var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+	markCurrentPosition(loc);
+	myGeoLoaction = loc;
+	
+	centerLocation = loc;
 	getAllLocationsWithEvents();
 }
 
@@ -88,10 +99,39 @@ function createMarkers(locationList, hasEvent){
 	}
 }
 
+function centerLocationChooser(value){
+	if (value == "currPos"){
+		centerLocation = myGeoLoaction;
+	} else if (value == "place"){
+		if (typeof autocomplete.getPlace() == 'undefined'){
+			alert('Please enter a Location');
+		}else{
+			centerLocation = autocomplete.getPlace().geometry.location;
+		}
+	}
+	console.log("geoLoc: " + centerLocation);
+	markCurrentPosition(centerLocation);
+	adjustAllFilter();
+}
+
+function placeInputFocusLost(){
+	console.log("focus lost");
+	if (document.getElementById('filterByPlaceCheckbox').checked){
+		console.log("recalc current pos");
+		if (typeof autocomplete.getPlace() == 'undefined'){
+			alert('Bitte einen gültigen Ort eingeben');
+		}else{
+			centerLocation = autocomplete.getPlace().geometry.location;
+		}
+	}
+	markCurrentPosition(centerLocation);
+	adjustAllFilter();
+}
+
 
 function adjustAllFilter(){
 	var radius = document.getElementById('inputRadius').value;	
-	allLocationsInRadius = getAllLocationsInRadius(myGeoLoaction, radius, allLocations)
+	allLocationsInRadius = getAllLocationsInRadius(centerLocation, radius, allLocations)
 	
 	currentShown = showMarkersIfTypeChecked(allLocationsInRadius);
 	
@@ -116,17 +156,20 @@ function showMarkersIfTypeChecked(list){
 
 function adjustTimeFilters(){
 	var dateFilterRadio = document.getElementById('filterByDateCheckbox');
-	var timeFilterRadio = document.getElementById('filterByCurrentTimeCheckbox');
+	var filterByTimeCheckbox = document.getElementById('filterByTimeCheckbox');
 	if (dateFilterRadio.checked){
 		onFilterByCurrentDate();
-	} else if (timeFilterRadio.checked){
+	} else if (filterByTimeCheckbox.checked){
 		onFilterByTime();
 	}
 }
 
 function onFilterByCurrentTime(){
+	
 	var date = document.getElementById('dateInput').value;
 	var time = new Date();
+	document.getElementById('timeInput').value = "" + time.getHours() + ":" + time.getMinutes();
+	document.getElementById('filterByTimeCheckbox').checked = true;
 	onFilterByTimeAndDate(date, time.getHours());
 }
 
@@ -142,7 +185,6 @@ function onFilterByTime(){
 function onFilterByTimeAndDate(date, time){
 	timeFilterResult = new Array();
 	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time, allLocationsInRadius, allEvents);
-	console.log("timeFilterResult.matched: " + timeFilterResult.matched);
 	setIconsFromFilterResult(dateFilterResult.matched, false);
 	setIconsFromFilterResult(timeFilterResult.matched, true);
 	createTable(currentShown);
@@ -248,6 +290,7 @@ function removeElements(from, which){
 function showValue(newValue)
 {
 	document.getElementById("range").innerHTML=newValue;
+	
 	adjustAllFilter();
 }
 
@@ -299,9 +342,12 @@ function getPointFromString(str){
 
 
 function markCurrentPosition(position){
-	myGeoLoaction = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-	map.setCenter(myGeoLoaction);
-	createCurrentPosMarker(myGeoLoaction);
+	map.setCenter(position);
+	
+	if (typeof currentCenterMarker != 'undefined')
+		currentCenterMarker.setMap(null);
+	
+	createCurrentPosMarker(position);
 }
 
 function createCurrentPosMarker(latLng){
@@ -309,19 +355,21 @@ function createCurrentPosMarker(latLng){
 		position: latLng,
 		map: map,
 	});
+	currentCenterMarker = marker;
 }
 
-function getAddressFromLatLang(){
+function getAddressFromLatLang(latLng){
     var geocoder = new google.maps.Geocoder();
-    geocoder.geocode( { 'latLng': myGeoLoaction}, function(results, status) {
+    geocoder.geocode( { 'latLng': latLng}, function(results, status) {
 		if (status == google.maps.GeocoderStatus.OK) {
 			if (results[1]) {
-				console.log("adress from latlang: " + results[1]);
+				return results[1];
 			}
 		} else{
 			alert("Geocode was not successful for the following reason: " + status);
 		}
     });
+    return null;
 }
 
 function getLocationsFromResult(result){
