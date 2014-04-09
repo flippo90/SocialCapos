@@ -73,11 +73,11 @@
     </div>
     <div>
 	    <input type="radio" name="filter" id="filterByDateCheckbox" onclick="onFilterByCurrentDate()" checked>Nach Datum</input>
-	    <input id="dateInput" type="date" placeholder="Datum">
+	    <input id="dateInput" type="date" placeholder="Datum" onblur="dateInputFocusLost()" >
 	</div>
 	<div>    
-	    <input type="radio" name="filter" id="filterByTimeCheckbox" onclick="onFilterByTime()">Nach Zeit</input>
-	    <input id="timeInput" type="time" placeholder="Zeit">
+	    <input type="radio" name="filter" id="filterByTimeCheckbox" onclick="onFilterByTime()">Nach Zeit und Datum</input>
+	    <input id="timeInput" type="time" placeholder="Zeit" onblur="timeInputFocusLost()">
 	    <button id="currentTimeBtn" onclick="onFilterByCurrentTime()">Jetzt</button>
     </div>
     <div>
@@ -88,7 +88,7 @@
 		<input name="filterByPlace" type="radio" value="currPos" onclick="centerLocationChooser(this.value)" checked>aktuellen Standort verwenden</input>
 	</div>
 	<input name="filterByPlace" id="filterByPlaceCheckbox" type="radio" for="inputOrt" value="place" onclick="centerLocationChooser(this.value)"></input>
-    <input id="inputOrt" placeholder="Ort" onblur="placeInputFocusLost()"></input>
+    <input id="inputOrt" placeholder="Ort"></input>
   </form>
 </section>
 

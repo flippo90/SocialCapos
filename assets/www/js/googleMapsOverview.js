@@ -19,15 +19,15 @@ var centerLocation;
 var autocomplete
 
 var currentCenterMarker;
+var currentCenterRadiusCircle;
 
 google.maps.event.addDomListener(window, 'load', initialize);
-function initialize() {
-	var input = document.getElementById('inputOrt');
-	autocomplete = new google.maps.places.Autocomplete(input);
+function initialize() {	
 	initGoogleMaps();
 	createTypeArray();
 	initDateAndTimeFilterValues();
 	initRadiusValue();
+	initAutocomplete();
 	fillMap();	
 }
 
@@ -104,7 +104,7 @@ function centerLocationChooser(value){
 		centerLocation = myGeoLoaction;
 	} else if (value == "place"){
 		if (typeof autocomplete.getPlace() == 'undefined'){
-			alert('Please enter a Location');
+			//alert('Please enter a Location');
 		}else{
 			centerLocation = autocomplete.getPlace().geometry.location;
 		}
@@ -114,20 +114,32 @@ function centerLocationChooser(value){
 	adjustAllFilter();
 }
 
-function placeInputFocusLost(){
-	console.log("focus lost");
-	if (document.getElementById('filterByPlaceCheckbox').checked){
-		console.log("recalc current pos");
-		if (typeof autocomplete.getPlace() == 'undefined'){
-			alert('Bitte einen gültigen Ort eingeben');
-		}else{
-			centerLocation = autocomplete.getPlace().geometry.location;
-		}
-	}
-	markCurrentPosition(centerLocation);
-	adjustAllFilter();
+function timeInputFocusLost(){
+	if (document.getElementById('filterByTimeCheckbox').checked)
+		onFilterByTime();
 }
 
+function dateInputFocusLost(){
+	if (document.getElementById('filterByDateCheckbox').checked){
+		onFilterByCurrentDate();
+		console.log("filtered by date");
+	}
+}
+
+function setPlaceChangedListener(){
+	google.maps.event.addListener(autocomplete, 'place_changed', function() {
+		if (document.getElementById('filterByPlaceCheckbox').checked){
+			var place = autocomplete.getPlace();
+		    if (!place.geometry) {
+		    	return;
+		    }	    
+		    
+		    centerLocation = place.geometry.location;
+		    markCurrentPosition(centerLocation);
+		    adjustAllFilter();
+		}	
+	});
+}
 
 function adjustAllFilter(){
 	var radius = document.getElementById('inputRadius').value;	
@@ -164,8 +176,7 @@ function adjustTimeFilters(){
 	}
 }
 
-function onFilterByCurrentTime(){
-	
+function onFilterByCurrentTime(){	
 	var date = document.getElementById('dateInput').value;
 	var time = new Date();
 	document.getElementById('timeInput').value = "" + time.getHours() + ":" + time.getMinutes();
@@ -179,7 +190,6 @@ function onFilterByTime(){
 	var timeInt = parseInt(time[0]);
 	onFilterByTimeAndDate(date, timeInt);
 }
-
 
 //time has to be a number
 function onFilterByTimeAndDate(date, time){
@@ -196,8 +206,6 @@ function onFilterByCurrentDate(){
 	setIconsFromFilterResult(dateFilterResult.matched, true);
 	createTable(currentShown);
 }
-
-
 
 function createTable(locations){
 	var table = document.getElementById('locationList');
@@ -253,7 +261,6 @@ function setIconsFromFilterResult(list, hasEvent){
 	}
 }
 
-
 function showAllMarkersInList(list){
 
 	showMapEntries(list);
@@ -290,7 +297,7 @@ function removeElements(from, which){
 function showValue(newValue)
 {
 	document.getElementById("range").innerHTML=newValue;
-	
+	createCurrentRaiusCircle(myGeoLoaction);	
 	adjustAllFilter();
 }
 
@@ -339,15 +346,33 @@ function getPointFromString(str){
 	return point;
 }
 
-
-
 function markCurrentPosition(position){
 	map.setCenter(position);
 	
 	if (typeof currentCenterMarker != 'undefined')
 		currentCenterMarker.setMap(null);
 	
+	createCurrentRaiusCircle(position);
+	
 	createCurrentPosMarker(position);
+}
+
+function createCurrentRaiusCircle(latLng){
+	if (typeof currentCenterRadiusCircle != 'undefined')
+		currentCenterRadiusCircle.setMap(null);
+	
+	var radius = document.getElementById('inputRadius').value;
+		
+	var marker = new google.maps.Circle({
+        center: latLng,
+        radius: radius * 1000,
+        fillColor: "#bdbdbd",
+        fillOpacity: 0.5,
+        strokeOpacity: 0.0,
+        strokeWeight: 0,
+        map: map
+	});
+	currentCenterRadiusCircle = marker;
 }
 
 function createCurrentPosMarker(latLng){
@@ -356,6 +381,18 @@ function createCurrentPosMarker(latLng){
 		map: map,
 	});
 	currentCenterMarker = marker;
+}
+
+function initAutocomplete(){
+	var input = document.getElementById('inputOrt');
+	
+	var options = {
+	  bounds: yourBounds,
+	  types: ['(cities)']
+	};
+	
+	autocomplete = new google.maps.places.Autocomplete(input, options);
+	setPlaceChangedListener();
 }
 
 function getAddressFromLatLang(latLng){
@@ -383,7 +420,6 @@ function getLocationsFromResult(result){
 	return locations;
 }
 
-
 function getEventsFromResult(result){
 	var events = new Array();
 	for (var i in result.idArray){
@@ -407,6 +443,12 @@ function initGoogleMaps(){
 		};
 		
 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+}
+
+function initAutocomplete(){
+	var input = document.getElementById('inputOrt');
+	autocomplete = new google.maps.places.Autocomplete(input);
+	setPlaceChangedListener();
 }
 
 function initDateAndTimeFilterValues(){
