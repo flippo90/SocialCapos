@@ -3,9 +3,7 @@ var myGeoLoaction;
 var searchedType;
 
 var allLocations = new Array();
-var allEvents = new Array();
 var allLocationsInRadius = new Array();
-
 var currentShown = new Array();
 
 var timeFilterResult = new Array();
@@ -21,6 +19,7 @@ var currentCenterMarker;
 var currentCenterRadiusCircle;
 
 google.maps.event.addDomListener(window, 'load', initialize);
+
 function initialize() {	
 	initGoogleMaps();
 	createTypeArray();
@@ -72,7 +71,7 @@ function getAllEvents(){
         dataType: "json",
         
         success: function(result){
-        	allEvents = getEventsFromResult(result);
+        	setAllEventsToLocation(result);
         	createMarkers(allLocations);
         	adjustAllFilter();
         }
@@ -85,7 +84,8 @@ function createMarkers(locationList, hasEvent){
 	
 		var marker = new google.maps.Marker({
 			position: locationList[i].geoLocation,
-			title: locationList[i].id
+			title: locationList[i].id,
+			id: 0
 		});
 		
 		google.maps.event.addListener(marker, 'click', function() {
@@ -194,14 +194,14 @@ function onFilterByTime(){
 //time has to be a number
 function onFilterByTimeAndDate(date, time){
 	timeFilterResult = new Array();
-	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time, allLocationsInRadius, allEvents);
+	timeFilterResult = getAllLocationsWithEventAtDateAndTime(date, time, allLocationsInRadius);
 	setIconsFromFilterResult(dateFilterResult.matched, false);
 	setIconsFromFilterResult(timeFilterResult.matched, true);
 	createTable(currentShown);
 }
 
 function onFilterByCurrentDate(){
-	dateFilterResult = getAllLocationsWithEventAtDate(document.getElementById('dateInput').value, allLocationsInRadius, allEvents);
+	dateFilterResult = getAllLocationsWithEventAtDate(document.getElementById('dateInput').value, allLocationsInRadius);
 	setIconsFromFilterResult(timeFilterResult.matched, false);
 	setIconsFromFilterResult(dateFilterResult.matched, true);
 	createTable(currentShown);
@@ -253,11 +253,12 @@ function onShowLocations(checked){
 	}
 }
 
-function setIconsFromFilterResult(list, hasEvent){
+function setIconsFromFilterResult(list, hasEvent, eventId){
 	for (var i in list){
 		var location = list[i];
 		var iconString = getMarkerIcon(location.type, hasEvent);
 		location.marker.setIcon(iconString);	
+		location.marker.id = eventId;
 	}
 }
 
@@ -420,8 +421,7 @@ function getLocationsFromResult(result){
 	return locations;
 }
 
-function getEventsFromResult(result){
-	var events = new Array();
+function setAllEventsToLocation(result){
 	for (var i in result.idArray){
 		var event = new eventConstructor(
 				result.idArray[i], 
@@ -432,15 +432,13 @@ function getEventsFromResult(result){
 				result.timeArray[i], 
 				result.turnusArray[i], 
         		result.locationIdArray[i]); 
-		events.push(event);
 		
 		for (var i in allLocations){
-			if (allLocations[i].id == event.id){
+			if (allLocations[i].id == event.location){
 				allLocations[i].events.push(event);
 			}
 		}
 	}
-	return events;
 }
 
 function initGoogleMaps(){

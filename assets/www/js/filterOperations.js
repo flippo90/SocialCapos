@@ -63,18 +63,16 @@ function filterById(allLocations, id){
 	return result;
 }
 
-function getAllLocationsWithEventAtDate(date, allLocations, allEvents){
+function getAllLocationsWithEventAtDate(date, allLocations){
 	var matched = new Array();
 	var notMatched = new Array();	
 	var foundEvent = false;
 	for (var i in allLocations){
 		var location = allLocations[i];
-		for (var k in allEvents){
-			var event = allEvents[k];
-			if (location.id == event.location){
-				if (date == event.date){
-					foundEvent = true;
-				}
+		for (var k in location.events){
+			var event = location.events[k];
+			if (date == event.date){
+				foundEvent = true;
 			}
 		}
 		
@@ -90,18 +88,16 @@ function getAllLocationsWithEventAtDate(date, allLocations, allEvents){
 	return result;
 }
 
-function getAllLocationsWithEventAtDateAndTime(date, time, locations, events){
+function getAllLocationsWithEventAtDateAndTime(date, time, locations){
 	var matched = new Array();
 	var notMatched = new Array();	
 	var foundEvent = false;
 	for (var i in locations){
 		var location = locations[i];
-		for (var k in events){
-			var event = events[k];
-			if (location.id == event.location){
-				if (date == event.date && eventIsAtTime(time, event.time)){
-					foundEvent = true;
-				}
+		for (var k in location.events){
+			var event = location.events[k];
+			if (date == event.date && eventIsAtTime(time, event.time)){
+				foundEvent = true;
 			}
 		}
 		
