@@ -7,7 +7,6 @@ var allEvents = new Array();
 var allLocationsInRadius = new Array();
 
 var currentShown = new Array();
-var locationMarkerMap = {};
 
 var timeFilterResult = new Array();
 var dateFilterResult = new Array();
@@ -91,11 +90,12 @@ function createMarkers(locationList, hasEvent){
 		
 		google.maps.event.addListener(marker, 'click', function() {
 		     //show event details page
-		     window.open("eventDetails.html?#" + marker.getPosition() ,"_self");
+		     var win = window.open("eventDetails.html","_self");
+		     //win.document.eventObject = 
 		  });
 		
-		marker.setIcon(getMarkerIcon(locationList[i].type, false));		
-		locationMarkerMap[locationList[i].geoLocation] = marker;
+		marker.setIcon(getMarkerIcon(locationList[i].type, false));	
+		locationList[i].marker = marker;
 	}
 }
 
@@ -213,7 +213,7 @@ function createTable(locations){
 	for(var i in locations){
 		
 		var color;
-		if (!(locationMarkerMap[locations[i].geoLocation].icon instanceof Object)){
+		if (!(locations[i].marker.icon instanceof Object)){
 			color = "#00FF00";
 		}
 		else{
@@ -257,7 +257,7 @@ function setIconsFromFilterResult(list, hasEvent){
 	for (var i in list){
 		var location = list[i];
 		var iconString = getMarkerIcon(location.type, hasEvent);
-		locationMarkerMap[location.geoLocation].setIcon(iconString);	
+		location.marker.setIcon(iconString);	
 	}
 }
 
@@ -268,12 +268,12 @@ function showAllMarkersInList(list){
 }
 
 function showMapEntries(list){
-	Object.keys(locationMarkerMap).forEach(function (key) {
-			locationMarkerMap[key].setMap(null);
-		});
+	for (var i in allLocations){
+		allLocations[i].marker.setMap(null);
+	}
 	
 	for (var i in list){
-		locationMarkerMap[list[i].geoLocation].setMap(map);
+		list[i].marker.setMap(map);
 	}
 }
 
@@ -433,6 +433,12 @@ function getEventsFromResult(result){
 				result.turnusArray[i], 
         		result.locationIdArray[i]); 
 		events.push(event);
+		
+		for (var i in allLocations){
+			if (allLocations[i].id == event.id){
+				allLocations[i].events.push(event);
+			}
+		}
 	}
 	return events;
 }
@@ -487,6 +493,8 @@ function locationConstructor(id, name, geoLocation, openingHours, type, likes){
 	this.openingHours = openingHours;
 	this.type = type;
 	this.likes = likes;
+	this.marker = null;
+	this.events = new Array();
 }
 
 Date.prototype.toDateInputValue = (function() {
