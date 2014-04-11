@@ -66,17 +66,10 @@ function filterById(allLocations, id){
 function getAllLocationsWithEventAtDate(date, allLocations){
 	var matched = new Array();
 	var notMatched = new Array();	
-	var foundEvent = false;
 	for (var i in allLocations){
 		var location = allLocations[i];
-		for (var k in location.events){
-			var event = location.events[k];
-			if (date == event.date){
-				foundEvent = true;
-			}
-		}
 		
-		if (foundEvent)
+		if (locationHasEventAtDate(date, location))
 			matched.push(location);
 		else
 			notMatched.push(location);
@@ -88,25 +81,38 @@ function getAllLocationsWithEventAtDate(date, allLocations){
 	return result;
 }
 
+function locationHasEventAtDate(date, location){
+	for (var k in location.events){
+		var event = location.events[k];
+		if (date == event.date){
+			location.eventMatchedFilter = event;
+			return true;
+		}
+	}
+	return false;
+}
+
+function locationHasEventAtDateAndTime(date, time, location){
+	for (var k in location.events){
+		var event = location.events[k];
+		if (date == event.date && eventIsAtTime(time, event.time)){
+			location.eventMatchedFilter = event;
+			return true;			
+		}
+	}
+	return false;
+}
+
 function getAllLocationsWithEventAtDateAndTime(date, time, locations){
 	var matched = new Array();
 	var notMatched = new Array();	
-	var foundEvent = false;
 	for (var i in locations){
 		var location = locations[i];
-		for (var k in location.events){
-			var event = location.events[k];
-			if (date == event.date && eventIsAtTime(time, event.time)){
-				foundEvent = true;
-			}
-		}
 		
-		if (foundEvent)
+		if (locationHasEventAtDateAndTime(date, time, location))
 			matched.push(location);
 		else
 			notMatched.push(location);
-		
-		foundEvent = false;
 	}
 	
 	var result = new filterResultConstructor(matched, notMatched);

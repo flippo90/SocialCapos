@@ -18,6 +18,9 @@ var autocomplete
 var currentCenterMarker;
 var currentCenterRadiusCircle;
 
+var detailLocation;
+var detailEvent;
+
 google.maps.event.addDomListener(window, 'load', initialize);
 
 function initialize() {	
@@ -85,18 +88,39 @@ function createMarkers(locationList, hasEvent){
 		var marker = new google.maps.Marker({
 			position: locationList[i].geoLocation,
 			title: locationList[i].id,
-			id: 0
+			id: i
 		});
-		
 		google.maps.event.addListener(marker, 'click', function() {
-		     //show event details page
-		     var win = window.open("eventDetails.html","_self");
-		     //win.document.eventObject = 
-		  });
+		    var loc = getLocationByMarker(this);
+		    detailLocation = location;
+		    detailEvent = location.eventMatchedFilter;
+		    initEventDetails(location, location.eventMatchedFilter);
+		    //geht beides nicht :(
+		    $('#section-suche').click();
+		    $('#section-suche').show();
+		});
 		
 		marker.setIcon(getMarkerIcon(locationList[i].type, false));	
 		locationList[i].marker = marker;
 	}
+}
+
+function initEventDetails(location, event){
+	if (event == null){
+		document.getElementById("partyName").style.visibility = 'hidden';
+		document.getElementById("openingTime").style.visibility = 'hidden';
+		document.getElementById("specials").style.visibility = 'hidden';
+	}else{
+		document.getElementById("partyName").innerHTML.style.visibility = 'visible'
+		document.getElementById("partyName").innerHTML  = event.description;
+		document.getElementById("specials").innerHTML.style.visibility = 'visible'
+		document.getElementById("specials").innerHTML  = event.specials;
+		document.getElementById("openingTime").innerHTML.style.visibility = 'visible'
+		document.getElementById("openingTime").innerHTML  = event.time;
+	}
+	document.getElementById("geoLocationInput").innerHTML = location.geoLocation;
+	document.getElementById("locationName").innerHTML  = location.name;
+	document.getElementById("numberLikes").innerHTML  = location.likes;
 }
 
 function centerLocationChooser(value){
@@ -253,12 +277,11 @@ function onShowLocations(checked){
 	}
 }
 
-function setIconsFromFilterResult(list, hasEvent, eventId){
+function setIconsFromFilterResult(list, hasEvent){
 	for (var i in list){
 		var location = list[i];
 		var iconString = getMarkerIcon(location.type, hasEvent);
 		location.marker.setIcon(iconString);	
-		location.marker.id = eventId;
 	}
 }
 
@@ -266,6 +289,17 @@ function showAllMarkersInList(list){
 
 	showMapEntries(list);
 	createTable(list);
+}
+
+function getLocationByMarker(theMarker){
+	for (var i in allLocationsInRadius){
+		if (allLocationsInRadius[i].marker.id == theMarker.id){
+			return allLocationsInRadius[i];
+		}
+	}
+	
+	alert("Eigentlich sollte zu jeder Location ein Marker existieren!");
+	return null;
 }
 
 function showMapEntries(list){
@@ -396,6 +430,18 @@ function initAutocomplete(){
 	setPlaceChangedListener();
 }
 
+function likeButtonClicked(){	
+	$.ajax({
+        type: "POST",
+        url: "php/increateLocationLikes.php",
+        data: "id=" + detailLocation.id,
+        success: function(msg)
+        {
+            
+        }
+   });
+}
+
 function getAddressFromLatLang(latLng){
     var geocoder = new google.maps.Geocoder();
     geocoder.geocode( { 'latLng': latLng}, function(results, status) {
@@ -493,6 +539,7 @@ function locationConstructor(id, name, geoLocation, openingHours, type, likes){
 	this.likes = likes;
 	this.marker = null;
 	this.events = new Array();
+	this.eventMatchedFilter = null;
 }
 
 Date.prototype.toDateInputValue = (function() {

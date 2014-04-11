@@ -27,7 +27,7 @@
     		<div class="otherswitch-switch"></div>
 		</label>
 	</div>
-	<a href="#" id="btnEinstellungen" class="btn btn-primary" data-href="einstellungen">Filter</a> 
+	<a href="#" id="btnEinstellungen" class="btn btn-primary right" data-href="einstellungen" >Einstellungen</a>
 </header>
 <main id="section-main" class="section-main">
     <div id="map-canvas" ></div>
@@ -97,23 +97,20 @@
   <h2>Einstellungen</h2>
   <form class="form-horizontal" role="form">
   <div class="form-group">
-    <div class="col-sm-10">
-		<input type = "radio"
-                 name = "resultDisplay"
-                 id = "displayMap"
-                 value = "map"
-                 checked = "checked" 
-                 onclick="onShowLocations(this.value)"/>
-          <label for = "displayMap">Karte</label>
-          
-          <input type = "radio"
-                 name = "resultDisplay"
-                 id = "displayList"
-                 value = "list" 
-                 onclick="onShowLocations(this.value)"/>
-    	<label for = "displayList">Liste</label>
-	</div>
-    
+    <label class="controls" type="text">Ausgewaehlte Position</label>	
+  	<label class="controls" id="geoLocationInput" type="text"></label>	
+  	<label class="controls" type="text">Location: </label>	
+  	<label class="controls" id="locationName" type="text"></label>	
+  	<label class="controls" type="text">Party: </label>	
+  	<label class="controls" id="partyName" type="text"></label>	
+  	<label class="controls" type="text">Specials: </label>	
+  	<label class="controls" id="specials" type="text"></label>	
+  	<label class="controls" type="text">Anzahl Likes</label>	
+  	<label class="controls" id="numberLikes" type="text"></label>	
+  	<label class="controls" type="text">Oeffnugszeit</label>	
+  	<label class="controls" id="openingTime" type="text"></label>	
+  	<button class="controls" onclick="likeButtonClicked()">I Like</button>
+  	<input id="comment" class="controls" type="text" placeholder="Kommentar Hinterlassen">
   </div>
 </form>
 </section>

@@ -5,8 +5,10 @@ function init(){
 	// with the link at the hash tag...
 	
 	// this are the koordinates of the bar. we can search for the location with them
-	var coordinates = window.location.hash.slice(1);
-	
+	 //console.log(location.id + "  " + event.id + "  " + event.location);
+	    
+	var k = decodeURIComponent(window.location.hash.slice(1));
+	console.log(k.id);
 	//the information from the event that takes place
 	var geoLocationLabel = document.getElementById("geoLocationInput").innerHTML = coordinates;
 	var locationNameLabel = document.getElementById("locationName").innerHTML  = "Capos";
