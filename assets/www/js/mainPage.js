@@ -22,12 +22,13 @@ $(document).ready(function() {
 	$('#btnSuche').on('click', function() {
     	$('#section-suche').toggleClass('active');
     	$('#section-einstellungen').removeClass('active');
+    	console.log("btnSuche click");
 	});
 
 	$('#btnEinstellungen').on('click', function() {
 	    $('#section-einstellungen').toggleClass('active');
 	    $('#section-suche').removeClass('active');
-	    console.log("change section");
+	    console.log("btnEinstellungen click");
 	});
 
 	$('#section-main').on('click', function() {
