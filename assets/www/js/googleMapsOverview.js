@@ -82,7 +82,6 @@ function getAllEvents(){
 }
 
 function createMarkers(locationList, hasEvent){
-
 	for (var i in locationList){
 	
 		var marker = new google.maps.Marker({
@@ -91,13 +90,12 @@ function createMarkers(locationList, hasEvent){
 			id: i
 		});
 		google.maps.event.addListener(marker, 'click', function() {
-		    var loc = getLocationByMarker(this);
+		    /*var loc = getLocationByMarker(this);
 		    detailLocation = location;
 		    detailEvent = location.eventMatchedFilter;
 		    initEventDetails(location, location.eventMatchedFilter);
-		    //geht beides nicht :(
-		    $('#section-suche').click();
-		    $('#section-suche').show();
+		    //geht beides nicht :(*/
+		    $('#btnSuche').click();
 		});
 		
 		marker.setIcon(getMarkerIcon(locationList[i].type, false));	
