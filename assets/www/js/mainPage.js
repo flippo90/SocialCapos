@@ -27,6 +27,7 @@ $(document).ready(function() {
 	$('#btnEinstellungen').on('click', function() {
 	    $('#section-einstellungen').toggleClass('active');
 	    $('#section-suche').removeClass('active');
+	    console.log("change section");
 	});
 
 	$('#section-main').on('click', function() {
