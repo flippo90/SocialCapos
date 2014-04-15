@@ -32,6 +32,6 @@ $(document).ready(function() {
 	});
 
 	$('#section-main').on('click', function() {
-	    $('#section-suche, #section-einstellungen').removeClass('active');
+	    //$('#section-suche, #section-einstellungen').removeClass('active');
 	});
 });

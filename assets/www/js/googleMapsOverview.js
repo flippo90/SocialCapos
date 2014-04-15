@@ -53,7 +53,6 @@ function locationFound(position)
 
 
 function getAllLocationsWithEvents(){
-	
 	$.ajax({
         type: "GET",
         url: "php/getAllLocations.php",
@@ -83,19 +82,20 @@ function getAllEvents(){
 
 function createMarkers(locationList, hasEvent){
 	for (var i in locationList){
-	
+		
 		var marker = new google.maps.Marker({
 			position: locationList[i].geoLocation,
 			title: locationList[i].id,
 			id: i
 		});
+		
 		google.maps.event.addListener(marker, 'click', function() {
-		    /*var loc = getLocationByMarker(this);
-		    detailLocation = location;
-		    detailEvent = location.eventMatchedFilter;
-		    initEventDetails(location, location.eventMatchedFilter);
-		    //geht beides nicht :(*/
-		    $('#btnSuche').click();
+		    var loc = getLocationByMarker(this);
+		    detailLocation = loc;
+		    detailEvent = loc.eventMatchedFilter;
+		    initEventDetails(loc, loc.eventMatchedFilter);
+		    
+		    $('#btnEinstellungen').click();
 		});
 		
 		marker.setIcon(getMarkerIcon(locationList[i].type, false));	
@@ -104,21 +104,90 @@ function createMarkers(locationList, hasEvent){
 }
 
 function initEventDetails(location, event){
+	document.getElementById("locationName").innerHTML = location.name;
+	document.getElementById("locationAddress").innerHTML = location.address;
+	getAddressFromLatLang(location.geoLocation);
+	
+	locationAddress
 	if (event == null){
-		document.getElementById("partyName").style.visibility = 'hidden';
-		document.getElementById("openingTime").style.visibility = 'hidden';
-		document.getElementById("specials").style.visibility = 'hidden';
+		onShowLocation(location);
 	}else{
-		document.getElementById("partyName").innerHTML.style.visibility = 'visible'
-		document.getElementById("partyName").innerHTML  = event.description;
-		document.getElementById("specials").innerHTML.style.visibility = 'visible'
-		document.getElementById("specials").innerHTML  = event.specials;
-		document.getElementById("openingTime").innerHTML.style.visibility = 'visible'
-		document.getElementById("openingTime").innerHTML  = event.time;
+		onShowEvent(event);
+		loadComments();
 	}
-	document.getElementById("geoLocationInput").innerHTML = location.geoLocation;
-	document.getElementById("locationName").innerHTML  = location.name;
-	document.getElementById("numberLikes").innerHTML  = location.likes;
+}
+
+function onShowEvent(event){
+	document.getElementById("eventSection").style.visibility = 'visible'
+	document.getElementById("locationSection").style.visibility = 'hidden';
+
+	document.getElementById("eventName").innerHTML = event.name;
+	document.getElementById("specials").innerHTML = event.specials;
+	document.getElementById("numberLikesEvent").innerHTML = event.likes;
+	document.getElementById("eventTime").innerHTML = event.time;
+}
+
+function onShowLocation(location){
+	document.getElementById("eventSection").style.visibility = 'hidden';
+	document.getElementById("locationSection").style.visibility = 'visible';
+	
+	document.getElementById("openingTime").innerHTML = location.openingHours;
+	document.getElementById("numberLikes").innerHTML = location.likes;
+	
+	//document.getElementById("comments").innerHTML = location.comments;
+}
+
+function loadComments(){
+	var commentList = new Array();
+	$.ajax({
+        type: "GET",
+        url: "php/loadCommentsForEvent.php",
+        data: "id=" + detailEvent.id,
+        dataType: "json",
+
+        success: function(result){
+        	for (var i in result.commentIds){
+        		var comment = new commentConstructor(result.commentIds[i], result.events[i], result.texts[i], result.writers[i]);
+                commentList.push(comment);
+        	}
+        	showComments(commentList);
+        }
+    })
+}
+
+function showComments(commentList){
+	var table = document.getElementById('commentList');
+	var html = "";
+	for(var i in commentList){
+		html = html + "<label>" + commentList[i].text +  "</label><br>";
+	}
+	table.innerHTML = html;
+}
+
+function onPostComment(sender){
+	if (sender == "event"){
+		var writer = "philipp";
+		var text = document.getElementById("eventCommentInput").value;
+		if (text == ""){
+			alert("Bitte Text für einen Kommentar eingeben");
+		} else{			
+			postComment("postEventComment", text, writer);
+		}
+	} else{
+		
+	}
+}
+
+function postComment(phpFilename, text, writer){
+	$.ajax({
+        type: "POST",
+        url: "php/" + phpFilename + ".php",
+        data: "id=" + detailEvent.id + "&text=" + text + "&writer=" + writer,
+        success: function(msg)
+        {
+        	
+        }
+   });
 }
 
 function centerLocationChooser(value){
@@ -131,7 +200,6 @@ function centerLocationChooser(value){
 			centerLocation = autocomplete.getPlace().geometry.location;
 		}
 	}
-	console.log("geoLoc: " + centerLocation);
 	markCurrentPosition(centerLocation);
 	adjustAllFilter();
 }
@@ -144,7 +212,6 @@ function timeInputFocusLost(){
 function dateInputFocusLost(){
 	if (document.getElementById('filterByDateCheckbox').checked){
 		onFilterByCurrentDate();
-		console.log("filtered by date");
 	}
 }
 
@@ -252,8 +319,6 @@ function createTable(locations){
 	}
 	table.innerHTML = html;
 }
-
-
 
 function onTypeFilterChanged(checkbox){
 	var result = filterByType(allLocationsInRadius, checkbox.value);
@@ -399,8 +464,8 @@ function createCurrentRaiusCircle(latLng){
 	var marker = new google.maps.Circle({
         center: latLng,
         radius: radius * 1000,
-        fillColor: "#bdbdbd",
-        fillOpacity: 0.5,
+        fillColor: "grey",
+        fillOpacity: 0.3,
         strokeOpacity: 0.0,
         strokeWeight: 0,
         map: map
@@ -427,31 +492,56 @@ function initAutocomplete(){
 	autocomplete = new google.maps.places.Autocomplete(input, options);
 	setPlaceChangedListener();
 }
+//theoretisch müsste man sich nach dem like den aktuellen Wert aus der db nochmal holen
+//vllt könnte es den benutzer aber auch verwirren wenn anzahl likes auf einmal springt?
 
-function likeButtonClicked(){	
+//Wie kann man sicherstellen dass ein Benutzer nur 1x den like button drückt und nicht öfters?
+function likeLocationButtonClicked(){		
 	$.ajax({
         type: "POST",
-        url: "php/increateLocationLikes.php",
+        url: "php/increaseLocationLikes.php",
         data: "id=" + detailLocation.id,
         success: function(msg)
+        {        	
+        	var numberOfLikes = parseInt(detailLocation.likes);
+        	document.getElementById("numberLikes").innerHTML = numberOfLikes + 1;        	
+        }
+   });
+}
+
+//theoretisch müsste man sich nach dem like den aktuellen Wert aus der db nochmal holen
+//vllt könnte es den benutzer aber auch verwirren wenn anzahl likes auf einmal springt?
+
+//Wie kann man sicherstellen dass ein Benutzer nur 1x den like button drückt und nicht öfters?
+function likeEventButtonEvent(){
+	$.ajax({
+        type: "POST",
+        url: "php/increaseEventLikes.php",
+        data: "id=" + detailEvent.id,
+        success: function(msg)
         {
-            
+        	var numberOfLikes = parseInt(detailEvent.likes);
+        	document.getElementById("numberLikesEvent").innerHTML = numberOfLikes + 1;
+        	
         }
    });
 }
 
 function getAddressFromLatLang(latLng){
-    var geocoder = new google.maps.Geocoder();
-    geocoder.geocode( { 'latLng': latLng}, function(results, status) {
-		if (status == google.maps.GeocoderStatus.OK) {
-			if (results[1]) {
-				return results[1];
-			}
-		} else{
-			alert("Geocode was not successful for the following reason: " + status);
-		}
-    });
-    return null;
+	var geocoder = new google.maps.Geocoder();
+	var result = null
+	geocoder.geocode({'latLng': latLng}, function(results, status) {
+	    if (status == google.maps.GeocoderStatus.OK) {
+	      if (results[1]) {
+	    	  result = results[1].formatted_address;
+	    	  //document.getElementById("locationAddress").innerHTML = result;
+	      } else {
+	        alert('No results found');
+	      }
+	    } else {
+	      alert('Geocoder failed due to: ' + status);
+	    }
+	  });
 }
 
 function getLocationsFromResult(result){
@@ -459,8 +549,8 @@ function getLocationsFromResult(result){
 	for (var loc in result.geoLocations){
 		var geoLocString = getPointFromString(result.geoLocations[loc].slice(1));
 		var location = new locationConstructor(result.id[loc], result.names[loc], 
-				geoLocString, result.openingHours[loc], result.types[loc], result.likes[loc])
-		locations.push(location)
+				geoLocString, result.openingHours[loc], result.types[loc], result.likes[loc], result.address[loc]);
+		locations.push(location);
     }
 	return locations;
 }
@@ -475,7 +565,9 @@ function setAllEventsToLocation(result){
         		result.dateArray[i], 
 				result.timeArray[i], 
 				result.turnusArray[i], 
-        		result.locationIdArray[i]); 
+        		result.locationIdArray[i],
+        		result.likesArray[i],
+        		result.commentsArray[i]); 
 		
 		for (var i in allLocations){
 			if (allLocations[i].id == event.location){
@@ -517,7 +609,7 @@ function createTypeArray(){
 	typeArray.push("Other");
 }
 
-function eventConstructor(id, name, description, specials, date, time, turnus, location){
+function eventConstructor(id, name, description, specials, date, time, turnus, location, likes, comments){
 	this.id = id;
 	this.name = name;
 	this.description = description;
@@ -526,9 +618,11 @@ function eventConstructor(id, name, description, specials, date, time, turnus, l
 	this.time = time;
 	this.turnus = turnus;
 	this.location = location;
+	this.likes = likes;
+	this.comments = comments;
 }
 
-function locationConstructor(id, name, geoLocation, openingHours, type, likes){
+function locationConstructor(id, name, geoLocation, openingHours, type, likes, address){
 	this.id = id;
 	this.name = name;
 	this.geoLocation = geoLocation;
@@ -538,6 +632,14 @@ function locationConstructor(id, name, geoLocation, openingHours, type, likes){
 	this.marker = null;
 	this.events = new Array();
 	this.eventMatchedFilter = null;
+	this.address = address;
+}
+
+function commentConstructor(id, eventId, text, writer){
+	this.id = id;
+	this.eventId = eventId;
+	this.text = text;
+	this.writer = writer;
 }
 
 Date.prototype.toDateInputValue = (function() {

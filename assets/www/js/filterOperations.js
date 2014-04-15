@@ -82,6 +82,7 @@ function getAllLocationsWithEventAtDate(date, allLocations){
 }
 
 function locationHasEventAtDate(date, location){
+	location.eventMatchedFilter = null;
 	for (var k in location.events){
 		var event = location.events[k];
 		if (date == event.date){
@@ -93,6 +94,7 @@ function locationHasEventAtDate(date, location){
 }
 
 function locationHasEventAtDateAndTime(date, time, location){
+	location.eventMatchedFilter = null;
 	for (var k in location.events){
 		var event = location.events[k];
 		if (date == event.date && eventIsAtTime(time, event.time)){

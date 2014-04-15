@@ -14,7 +14,6 @@ $.ajax({
         		allLocations.push(location)
         		createEventForLocation(location);
             }
-        	createEventsForLocations();
         }
     })
 }

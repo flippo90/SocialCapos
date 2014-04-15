@@ -14,12 +14,12 @@ function onCreateLocation(){
 	var location = autocomplete.getPlace().geometry.location;
 	var type = document.getElementById("locationTypeSelector").value;
 	var offnungszeit = document.getElementById("oeffnungszeit").value;
-	
-	console.log("name " + locationName + " loction " + location + " Typ " + type + " offnungszeit " + offnungszeit);
+	var address = autocomplete.getPlace().formatted_address
+	console.log("name " + locationName + " loction " + location + " Typ " + type + " offnungszeit " + offnungszeit + " address" + address);
 	 $.ajax({
          type: "POST",
          url: "php/save.php",
-         data: "locationName=" + locationName + "&geoLocation=" + location + "&type=" + type + "&openingHours=" + offnungszeit,
+         data: "locationName=" + locationName + "&geoLocation=" + location + "&type=" + type + "&openingHours=" + offnungszeit+ "&address=" + address,
          success: function(msg)
          {
              /* form-div verstecken, seite nachladen & wieder einblenden (2000 ms) */

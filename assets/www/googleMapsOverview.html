@@ -20,11 +20,11 @@
   <body>
 <header id="section-header" class="section-header">
     <a href="#" id="btnSuche" class="btn btn-primary" data-href="suche">Filter</a> 
-	<div class="otherswitch">
-    	<input type="checkbox" name="checkClub" class="otherswitch-checkbox" id="bla" onclick="onShowLocations(this.checked)" checked>
-    	<label class="otherswitch-label" for="bla">
-    		<div class="otherswitch-inner"></div>
-    		<div class="otherswitch-switch"></div>
+	<div class="onoffswitch">
+    	<input type="checkbox" name="checkClub" class="onoffswitch-checkbox" id="bla" onclick="onShowLocations(this.checked)" checked>
+    	<label class="onoffswitch-label" for="bla">
+    		<div class="onoffswitch-inner"></div>
+    		<div class="onoffswitch-switch"></div>
 		</label>
 	</div>
 	<a href="#" id="btnEinstellungen" class="btn btn-primary right" data-href="einstellungen" >Einstellungen</a>
@@ -94,23 +94,58 @@
 </section>
 
 <section id="section-einstellungen" class="section-einstellungen">
-  <h2>Einstellungen</h2>
+  <h2 id="locationName"></h2>
+  <h6 id="locationAddress"></h6>
   <form class="form-horizontal" role="form">
-  <div class="form-group">
-    <label class="controls" type="text">Ausgewaehlte Position</label>	
-  	<label class="controls" id="geoLocationInput" type="text"></label>	
-  	<label class="controls" type="text">Location: </label>	
-  	<label class="controls" id="locationName" type="text"></label>	
-  	<label class="controls" type="text">Party: </label>	
-  	<label class="controls" id="partyName" type="text"></label>	
-  	<label class="controls" type="text">Specials: </label>	
-  	<label class="controls" id="specials" type="text"></label>	
-  	<label class="controls" type="text">Anzahl Likes</label>	
-  	<label class="controls" id="numberLikes" type="text"></label>	
-  	<label class="controls" type="text">Oeffnugszeit</label>	
-  	<label class="controls" id="openingTime" type="text"></label>	
-  	<button class="controls" onclick="likeButtonClicked()">I Like</button>
-  	<input id="comment" class="controls" type="text" placeholder="Kommentar Hinterlassen">
+  <div id="eventSection">
+    <div>
+	    <label type="text">Event Name: </label>	
+	  	<label id="eventName" type="text"></label>	
+  	</div>
+  	<div>
+	  	<label type="text">Specials: </label>	
+	  	<label id="specials" type="text"></label>	
+  	</div>
+  	<div>
+	  	<label type="text">Anzahl Likes: </label>	
+	  	<label id="numberLikesEvent" type="text"></label>	
+  		<button onclick="likeEventButtonEvent()">I Like</button>
+  	</div>
+  	<div>
+	  	<label type="text">Zeit: </label>	
+	  	<label id="eventTime" type="text"></label>	
+  	</div>
+  	<div>
+  		<input id="eventCommentInput" type="text" placeholder="Kommentar Hinterlassen">
+	  	<label id="comments" type="text"/>
+	  	<button id="postEventCommentBtn" onclick="onPostComment(this.value)" value="event">Senden</Button>
+	</div>
+	<div id="commentList">
+	
+	</div>
+	<div>
+		<button onclick="onShowLocation(detailLocation)">Location</button>
+	</div>
+  </div>
+  <div id="locationSection">
+	  <div>
+		<label type="text">Adresse: </label>	
+		<label id="locationAddress" type="text"></label>		
+	  </div>
+	  <div>
+	  	<label type="text">Oeffnugszeit: </label>	
+	  	<label id="openingTime" type="text"></label>	
+	   </div>
+	  <div>
+	  	<label type="text">Likes: </label>	
+	  	<label id="numberLikes" type="text"></label>	
+	  	<button onclick="likeLocationButtonClicked()">I Like</button>
+	  </div>
+	  <div>
+	  	<input id="locationCommentInput" type="text" placeholder="Kommentar Hinterlassen">
+	  	<label id="comments" type="text"/>
+	  	<button id="postLocationCommentBtn" onclick="onPostComment(this.value)" value="location">Senden</Button>
+	  </div>
   </div>
 </form>
 </section>

@@ -16,6 +16,8 @@
 	$descriptionArray = array();
 	$turnusArray = array();
 	$specialsArray = array();
+	$likesArray = array();
+	$commentsArray = array();
 	
 	while($row = mysqli_fetch_array($ergebnis)){
 	     $idArray[] = $row['Id'];
@@ -26,6 +28,8 @@
 	     $descriptionArray[] = $row['Description']; 
 	     $turnusArray[] = $row['Turnus'];
 		$specialsArray[] = $row['Specials'];
+		$likesArray[] = $row['Likes'];
+		$commentsArray[] = $row['Kommentare'];
 	}
 
 	echo json_encode( array( 
@@ -36,7 +40,9 @@
 	    "nameArray" => $nameArray,
 	     "descriptionArray" => $descriptionArray,
 	    "turnusArray" => $turnusArray,
-		"specialsArray" => $specialsArray
+		"specialsArray" => $specialsArray,
+		"likesArray" => $likesArray,
+		"commentsArray" => $commentsArray,
 	    ) 
 	);
 ?>
