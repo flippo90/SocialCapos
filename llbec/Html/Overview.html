@@ -1,0 +1,36 @@
+<!doctype html>
+<html ng-app="llbec">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+    <script src='//maps.googleapis.com/maps/api/js?sensor=false'></script>
+
+    <script src="Overview.js"></script>
+    <script src="Libraries/underscore.js"></script>
+    <script src="Libraries/angular-google-maps.js"></script>
+</head>
+
+<body ng-controller="sectionController">
+    <header id="section-header" class="section-header">
+        <button ng-click="activateSuche()" class="btn">Filter</button>
+        <button ng-click="activateEinstellungen()" class="btn">Einstellungen</button>
+    </header>
+    <main id="section-main" class="section-main">
+        <div ng-controller="mapController">
+            <google-map center=map.center zoom="map.zoom" draggable="true">
+                <marker coords="map.userCoords"></marker>
+            </google-map>
+        </div>
+    </main>
+
+    <section id="section-suche" class="{{sections.filterSection.css}}" text="a">
+        <h1>hallo</h1>
+    </section>
+
+    <section id="section-einstellungen" class="{{sections.einstellungenSection.css}}">
+        <h1>hallo2</h1>
+    </section>
+</body>
+</html>
