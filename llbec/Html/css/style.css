@@ -43,7 +43,7 @@ body {
     overflow: hidden;
 }
 
-.section-suche {
+#section-suche {
     position: absolute;
     top: 35px;
     left: -100%;
@@ -61,11 +61,11 @@ body {
     transition: all .3s ease-in-out;
 }
 
-.section-suche.active {
+#section-suche.active {
     left: 0;
 }
 
-.section-einstellungen {
+#section-einstellungen {
     position: absolute;
     top: 35px;
     left: 100%;
@@ -83,7 +83,7 @@ body {
     transition: all .3s ease-in-out;
 }
 
-.section-einstellungen.active {
+#section-einstellungen.active {
     left: 10%;
 }
 

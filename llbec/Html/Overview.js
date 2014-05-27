@@ -17,13 +17,21 @@ app.controller('sectionController', function($scope){
    };
 
     $scope.activateSuche = function(){
-        $scope.sections.filterSection.css = "section-suche.active";
-        $scope.sections.einstellungenSection.css = "section-einstellungen";
+        if ( $scope.sections.filterSection.css == 'active') {
+            $scope.sections.filterSection.css = "";
+        } else {
+            $scope.sections.filterSection.css = "active";
+        }
+        $scope.sections.einstellungenSection.css = "";
     };
 
     $scope.activateEinstellungen = function(){
-        $scope.sections.einstellungenSection.css = "section-einstellungen.active";
-        $scope.sections.filterSection.css = "section-suche";
+        if ( $scope.sections.einstellungenSection.css == 'active') {
+            $scope.sections.einstellungenSection.css = "";
+        } else {
+            $scope.sections.einstellungenSection.css = "active";
+        }
+        $scope.sections.filterSection.css = "";
     };
 
 });
